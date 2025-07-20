@@ -1,13 +1,22 @@
-import { Report } from "../store/reportStore";
+export interface TourismPlace {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+}
 
-export const tourismData: Report[] = [
+export const tourismData: TourismPlace[] = [
   {
-    id: 101,
-    lat: 3.7051,
-    lng: 98.4653,
-    description: "Pantai Silinka - pasir putih",
-    issues: ["Pariwisata"],
-    imageUrl: "/images/pantai_silinka.jpg",
+    id: 1,
+    name: "Pantai Cemara",
+    description: "Pantai yang indah dengan pasir putih.",
+    imageUrl: "/images/pantai-cemara.jpg",
   },
+  {
+    id: 2,
+    name: "Air Terjun Sipiso-piso",
+    description: "Air terjun yang menakjubkan di daerah Sumatera Utara.",
+    imageUrl: "/images/air-terjun-sipiso-piso.jpg",
+  },
+  // dst...
 ];
-

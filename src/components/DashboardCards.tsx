@@ -1,49 +1,80 @@
+"use client";
+
 import React, { useState } from "react";
-import PublicServiceGallery from './PublicServiceGallery';
-import MapWrapper from './MapWrapper';
-import { publicServicesData } from '../app/data/PublicService'; // ✅ Removed `.ts` extension
+import PublicServiceGallery from "./PublicServiceGallery";
+import MapWrapper from "./MapWrapper";
+import { publicServicesData } from "../app/data/PublicService";
 
-interface DashboardProps {
-  selectedService?: string; // ID layanan publik yang dipilih
-}
-
-const Dashboard: React.FC<DashboardProps> = ({ selectedService }) => {
-  const [selectedImages, setSelectedImages] = useState<string[]>([]); // State untuk menyimpan foto-foto layanan publik
+const Dashboard: React.FC = () => {
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<{
     lat: number;
     lng: number;
-  } | null>(null); // State untuk lokasi marker
+    name: string;
+    description: string;
+    imageUrl: string;
+  } | null>(null);
 
   const handleServiceClick = (service: any) => {
-    setSelectedImages(service.images); // Update state dengan foto-foto layanan publik
-    setSelectedLocation(service.location); // Update state dengan lokasi layanan publik
+    setSelectedImages(service.images);
+    setSelectedLocation({
+      lat: service.location.lat,
+      lng: service.location.lng,
+      name: service.name,
+      description: service.description,
+      imageUrl: service.images[0] || "/images/fallback.jpg",
+    });
   };
 
+  // Buat satu report agar MapWrapper bisa menampilkan marker tunggal
+  const reports = selectedLocation
+    ? [
+        {
+          id: 1,
+          lat: selectedLocation.lat,
+          lng: selectedLocation.lng,
+          description: selectedLocation.description,
+          issues: ["Layanan Publik"],
+          imageUrl: selectedLocation.imageUrl,
+        },
+      ]
+    : [];
+
   return (
-    <div className="dashboard">
-      <h1>Layanan Publik</h1>
-      <div className="services-list">
+    <div className="dashboard px-6 py-10">
+      <h1 className="text-2xl font-bold mb-6 text-blue-800">Layanan Publik</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {publicServicesData.map((service) => (
           <div
             key={service.id}
-            className={`service-item ${
-              selectedService === service.id ? "active" : ""
+            className={`p-4 border rounded-lg cursor-pointer transition hover:shadow ${
+              selectedLocation?.name === service.name
+                ? "bg-blue-50 border-blue-500"
+                : "bg-white"
             }`}
             onClick={() => handleServiceClick(service)}
           >
-            <h3>{service.name}</h3>
-            <p>{service.description}</p>
+            <h3 className="text-lg font-semibold text-gray-800">
+              {service.name}
+            </h3>
+            <p className="text-sm text-gray-600">{service.description}</p>
           </div>
         ))}
       </div>
+
       {/* Galeri Foto */}
       <PublicServiceGallery images={selectedImages} />
 
       {/* Peta */}
-      <MapWrapper
-        center={selectedLocation || { lat: 3.5997, lng: 98.674 }} // Default center Sumatera Utara
-        markers={[selectedLocation]}
-      />
+      <div className="mt-6">
+        <MapWrapper
+          reports={reports}
+          center={
+            selectedLocation || { lat: 3.5997, lng: 98.674 } // fallback Sumatera Utara
+          }
+        />
+      </div>
     </div>
   );
 };

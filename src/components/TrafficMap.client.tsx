@@ -7,7 +7,7 @@ import { useReportStore } from "@/app/store/reportStore";
 
 const TrafficMap = () => {
   const reports = useReportStore((s) => s.reports);
-  const category = useReportStore((s) => s.categoryFilter);
+  const category = useReportStore((s) => s.selectedCategory); // Ganti categoryFilter jadi selectedCategory
   const map = useMap();
 
   const filteredReports = category

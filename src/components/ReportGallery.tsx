@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function ReportGallery() {
   const reports = useReportStore((s) => s.reports);
-  const category = useReportStore((s) => s.categoryFilter);
+  const category = useReportStore((s) => s.selectedCategory); // <<< Ganti di sini
 
   const filteredReports = category
     ? reports.filter((r) => r.issues?.includes(category))

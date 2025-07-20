@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import dynamic from "next/dynamic";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { School, Landmark, Leaf, Home, MapPin } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { villageLocations } from "@/app/data/villages";
-import WilayahMapCard from "@/components/WilayahMapCard";
 
-// Dynamic import untuk Leaflet agar hanya dirender di client
+// Dynamic import agar Leaflet hanya dirender di client
+const WilayahMapCard = dynamic(() => import("@/components/WilayahMapCard"), {
+  ssr: false,
+});
+
 const MapWilayah = dynamic(() => import("@/components/MapWilayah"), {
   ssr: false,
 });
@@ -25,11 +28,6 @@ const pendidikanData = [
 export default function DashboardPage() {
   const mapRef = useRef<any>(null);
 
-  // Pastikan leaflet.css dimuat di client
-  useEffect(() => {
-    import("leaflet/dist/leaflet.css");
-  }, []);
-
   return (
     <>
       <Navbar />
@@ -40,7 +38,6 @@ export default function DashboardPage() {
           </h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Kartu Luas Wilayah diganti dengan peta polygon */}
             <WilayahMapCard />
 
             <InfoCard

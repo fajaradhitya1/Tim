@@ -18,8 +18,9 @@ export interface Report {
 interface MapWrapperProps {
   reports: Report[];
   onReady?: (actions: { flyToMarker: (id: number | string) => void }) => void;
-  selectedVillageId?: string; // untuk auto-zoom ke marker desa
-  selectedCategory?: string; // untuk filter kategori laporan
+  selectedVillageId?: string;
+  selectedCategory?: string;
+  center?: { lat: number; lng: number }; // support external center
 }
 
 // Icon marker laporan
@@ -56,7 +57,7 @@ const getReportIcon = (report: Report): L.DivIcon => {
   });
 };
 
-// Icon marker desa/produk unggulan
+// Icon marker desa
 const getVillageIcon = (imageUrl: string): L.DivIcon => {
   return L.divIcon({
     className: "",
@@ -86,6 +87,7 @@ const MapWrapper: React.FC<MapWrapperProps> = ({
   onReady,
   selectedVillageId,
   selectedCategory,
+  center: propCenter,
 }) => {
   const [mounted, setMounted] = useState(false);
   const mapRef = useRef<L.Map | null>(null);
@@ -96,7 +98,7 @@ const MapWrapper: React.FC<MapWrapperProps> = ({
   }, []);
 
   useEffect(() => {
-    if (onReady) {
+    if (onReady && mapRef.current) {
       onReady({
         flyToMarker: (id: number | string) => {
           const marker = markerRefs.current[id];
@@ -110,7 +112,6 @@ const MapWrapper: React.FC<MapWrapperProps> = ({
     }
   }, [onReady, reports]);
 
-  // Auto flyTo saat desa dipilih dari dropdown
   useEffect(() => {
     if (!selectedVillageId) return;
     const marker = markerRefs.current[`village-${selectedVillageId}`];
@@ -123,7 +124,7 @@ const MapWrapper: React.FC<MapWrapperProps> = ({
 
   if (!mounted) return null;
 
-  // Filter reports sesuai kategori
+  // Filter reports
   const filteredReports =
     selectedCategory && selectedCategory.toLowerCase() !== "semua"
       ? reports.filter((r) =>
@@ -133,23 +134,25 @@ const MapWrapper: React.FC<MapWrapperProps> = ({
         )
       : reports;
 
-  // Filter villageLocations tergantung kategori
+  // Filter villages
   const showVillages =
     !selectedCategory || selectedCategory.toLowerCase() === "semua"
       ? villageLocations
       : ["wisata", "layanan publik"].includes(selectedCategory.toLowerCase())
-      ? [] // jika kategori Layanan Publik atau Wisata, sembunyikan UMKM (village)
-      : villageLocations; // kategori lain tampilkan village (atau sesuaikan)
+      ? []
+      : villageLocations;
 
-  // Kalau ada selectedVillageId, filter villageLocations ke 1 desa saja
   const filteredVillages = selectedVillageId
     ? showVillages.filter((v) => v.id.toString() === selectedVillageId)
     : showVillages;
 
   const allLocations = [...filteredReports, ...filteredVillages];
-  const center = allLocations.length
+
+  const center = propCenter
+    ? propCenter
+    : allLocations.length
     ? { lat: allLocations[0].lat, lng: allLocations[0].lng }
-    : { lat: 3.6054, lng: 98.6794 }; // default fallback center
+    : { lat: 3.6054, lng: 98.6794 };
 
   return (
     <MapContainer
@@ -157,19 +160,20 @@ const MapWrapper: React.FC<MapWrapperProps> = ({
       zoom={13}
       scrollWheelZoom
       style={{ height: "500px", width: "100%", borderRadius: "12px" }}
-      whenCreated={(map) => {
-        mapRef.current = map;
-        if (allLocations.length > 0) {
+      whenReady={() => {
+        if (mapRef.current && allLocations.length > 0 && !propCenter) {
           const bounds = L.latLngBounds(
             allLocations.map((r) => [r.lat, r.lng])
           );
-          map.fitBounds(bounds, { padding: [30, 30] });
+          mapRef.current.fitBounds(bounds, { padding: [30, 30] });
         }
+      }}
+      ref={(mapInstance) => {
+        if (mapInstance) mapRef.current = mapInstance;
       }}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {/* Marker dari laporan */}
       {filteredReports.map((r) => (
         <Marker
           key={r.id}
@@ -208,7 +212,6 @@ const MapWrapper: React.FC<MapWrapperProps> = ({
         </Marker>
       ))}
 
-      {/* Marker dari desa/produk unggulan */}
       {filteredVillages.map((v) => (
         <Marker
           key={`village-${v.id}`}

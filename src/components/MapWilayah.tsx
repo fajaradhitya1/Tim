@@ -1,111 +1,139 @@
 "use client";
 
-import { useEffect } from "react";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { useRef } from "react";
+import { MapContainer, TileLayer, Marker, Popup, Polygon } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { villageLocations } from "@/app/data/villages";
 
-// Warna per wilayah
-const wilayahColors: Record<string, string> = {
-  "Desa Mangga": "#f87171",
-  "Desa Banyumas": "#fb923c",
-  "Desa Kwala Begumit": "#facc15",
-  "Desa Ara Condong": "#4ade80",
-  "Desa Pantai Gemi": "#60a5fa",
-  "Desa Karang Rejo": "#fdba74",
-  "Kelurahan Stabat Baru": "#c084fc",
-  "Kelurahan Kwala Bingai": "#f472b6",
-  "Kelurahan Perdamaian": "#34d399",
-  "Kelurahan Dendang": "#fcd34d",
-  "Kelurahan Paya Mabar": "#a78bfa",
-  "Kelurahan Sidomulyo": "#f87171",
-};
+interface Village {
+  id: number;
+  name: string;
+  lat: number;
+  lng: number;
+  description: string;
+  imageUrl: string;
+  polygon?: [number, number][]; // Optional polygon data
+}
 
-// Fungsi custom icon per wilayah
-function getCustomIcon(location: any) {
-  const color = wilayahColors[location.wilayah] || "#ccc";
+interface MapWilayahProps {
+  reports: Village[];
+  mapRef?: React.MutableRefObject<{
+    flyToMarker: (id: number | string) => void;
+    fitBounds: (bounds: L.LatLngBoundsExpression) => void;
+  } | null>;
+}
+
+// Marker icon generator
+const getVillageIcon = (imageUrl: string): L.DivIcon => {
   return L.divIcon({
     className: "",
     iconAnchor: [25, 50],
-    popupAnchor: [0, -40],
+    popupAnchor: [0, -45],
     html: `
       <div style="
         border: 3px solid white;
         border-radius: 50%;
-        background: ${color};
+        background: #2563eb;
         width: 60px;
         height: 60px;
         display: flex;
         justify-content: center;
         align-items: center;
+        overflow: hidden;
         box-shadow: 0 0 8px rgba(0,0,0,0.3);
       ">
-        <img src="${location.imageUrl}" style="width: 45px; height: 45px; border-radius: 50%;" />
+        <img src="${imageUrl}" style="width: 45px; height: 45px; border-radius: 50%;" />
       </div>
     `,
   });
-}
+};
 
-export default function MapWilayah({ reports, mapRef }: any) {
-  if (!reports || reports.length === 0) {
-    return (
-      <div className="text-center text-gray-500">Tidak ada data wilayah.</div>
-    );
-  }
+const MapWilayah: React.FC<MapWilayahProps> = ({ reports, mapRef }) => {
+  const internalRef = useRef<L.Map | null>(null);
+  const markerRefs = useRef<Record<number | string, L.Marker>>(
+    Object.create(null)
+  );
 
-  // Hitung pusat awal peta berdasarkan rata-rata lat lng
-  const avgLat =
-    reports.reduce((sum: number, r: any) => sum + r.lat, 0) / reports.length;
-  const avgLng =
-    reports.reduce((sum: number, r: any) => sum + r.lng, 0) / reports.length;
+  const allLocations = reports;
+  const center = allLocations.length
+    ? { lat: allLocations[0].lat, lng: allLocations[0].lng }
+    : { lat: 3.6054, lng: 98.6794 };
 
-  useEffect(() => {
-    if (mapRef.current && reports.length > 0) {
-      const bounds = L.latLngBounds(reports.map((r: any) => [r.lat, r.lng]));
-      mapRef.current.fitBounds(bounds, { padding: [30, 30] });
+  const handleWhenReady = () => {
+    const map = internalRef.current;
+    if (!map) return;
+
+    if (mapRef) {
+      mapRef.current = {
+        fitBounds: (bounds) => map.fitBounds(bounds),
+        flyToMarker: (id) => {
+          const marker = markerRefs.current[id];
+          if (marker) {
+            const latlng = marker.getLatLng();
+            map.flyTo(latlng, 16, { duration: 1 });
+            marker.openPopup();
+          }
+        },
+      };
     }
-  }, [reports]);
+
+    if (allLocations.length > 0) {
+      const bounds = L.latLngBounds(allLocations.map((v) => [v.lat, v.lng]));
+      map.fitBounds(bounds, { padding: [30, 30] });
+    }
+  };
 
   return (
     <MapContainer
-      center={[avgLat, avgLng]}
+      center={[center.lat, center.lng]}
       zoom={13}
-      style={{ height: "350px", width: "100%" }}
       scrollWheelZoom={true}
-      whenCreated={(map) => {
-        mapRef.current = {
-          fitBounds: (bounds: any) => map.fitBounds(bounds),
-          flyToMarker: (id: number) => {
-            const report = reports.find((r: any) => r.id === id);
-            if (report) {
-              map.flyTo([report.lat, report.lng], 16, { duration: 1.5 });
-              setTimeout(() => {
-                const popup = L.popup()
-                  .setLatLng([report.lat, report.lng])
-                  .setContent(
-                    `<strong>${report.wilayah}</strong><br>${report.description}`
-                  );
-                map.openPopup(popup);
-              }, 800);
-            }
-          },
-        };
+      style={{ height: "350px", width: "100%" }}
+      whenReady={handleWhenReady}
+      ref={(mapInstance) => {
+        if (mapInstance) internalRef.current = mapInstance;
       }}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {reports.map((r: any) => (
-        <Marker key={r.id} position={[r.lat, r.lng]} icon={getCustomIcon(r)}>
+      {/* Markers */}
+      {reports.map((v) => (
+        <Marker
+          key={v.id}
+          position={[v.lat, v.lng]}
+          icon={getVillageIcon(v.imageUrl)}
+          ref={(ref) => {
+            if (ref) markerRefs.current[v.id] = ref;
+          }}
+        >
           <Popup>
-            <strong>{r.wilayah}</strong>
-            <br />
-            {r.description}
+            <div className="text-sm min-w-[200px] space-y-1">
+              <p className="font-semibold">{v.name}</p>
+              <p>{v.description}</p>
+              <img
+                src={v.imageUrl}
+                alt={v.description}
+                className="w-full h-28 object-cover rounded"
+              />
+            </div>
           </Popup>
         </Marker>
       ))}
+
+      {/* Polygons */}
+      {reports.map(
+        (v, index) =>
+          v.polygon && (
+            <Polygon
+              key={`polygon-${index}`}
+              positions={v.polygon}
+              pathOptions={{ color: "#3b82f6", fillOpacity: 0.2 }}
+            />
+          )
+      )}
     </MapContainer>
   );
-}
+};
+
+export default MapWilayah;

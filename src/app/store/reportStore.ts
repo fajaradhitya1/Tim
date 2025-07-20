@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface Report {
+export interface Report {
   id: number;
   lat: number;
   lng: number;
@@ -12,10 +12,10 @@ interface Report {
 interface ReportStore {
   reports: Report[];
   setReports: (reports: Report[]) => void;
+  addReport: (report: Report) => void; // sudah ada tipe-nya
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
 
-  // Tambahan untuk filter berdasarkan isu spesifik (jalan rusak, banjir, dll)
   filter: string | null;
   setFilter: (filter: string | null) => void;
 }
@@ -23,6 +23,8 @@ interface ReportStore {
 export const useReportStore = create<ReportStore>((set) => ({
   reports: [],
   setReports: (reports) => set({ reports }),
+  addReport: (report) =>
+    set((state) => ({ reports: [...state.reports, report] })), // implementasi addReport
   selectedCategory: "",
   setSelectedCategory: (category) => set({ selectedCategory: category }),
   filter: null,
