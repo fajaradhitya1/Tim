@@ -1,51 +1,85 @@
-import { Report } from "../store/reportStore";
-
-export const reportData: Report[] = [
-  // Traffic Data
+export const reportData = [
+  // 5 Layanan Publik di Kecamatan Stabat
   {
     id: 1,
-    lat: 3.6206,
-    lng: 98.4895,
-    description: "Lubang besar di tengah jalan",
-    issues: ["Jalan Rusak"],
-    imageUrl: "/images/jalan_rusak.png",
+    lat: 3.755,
+    lng: 98.44,
+    description: "Kantor Kecamatan Stabat",
+    issues: ["Layanan Publik"],
+    imageUrl: "/images/kantorpolis.jpg",
   },
   {
     id: 2,
-    lat: 3.6506,
-    lng: 98.4901,
-    description: "Longsor menutup jalan",
-    issues: ["Longsor"],
-    imageUrl: "/images/longsor.png",
-  },
-
-  // Tourism Data
-  {
-    id: 101,
-    lat: 3.7051,
-    lng: 98.4653,
-    description: "Pantai Silinka - pasir putih",
-    issues: ["Pariwisata"],
-    imageUrl: "/images/pantai_silinka.jpg",
-  },
-
-  // Public Service Data
-  {
-    id: 102,
-    lat: 3.7,
-    lng: 98.52,
-    description: "Puskesmas tidak aktif",
+    lat: 3.752,
+    lng: 98.445,
+    description: "Puskesmas Stabat",
     issues: ["Layanan Publik"],
-    imageUrl: "/images/puskesmas.png",
+    imageUrl: "/images/puskesmas_stabat.jpg",
+  },
+  {
+    id: 3,
+    lat: 3.757,
+    lng: 98.435,
+    description: "Polsek Stabat",
+    issues: ["Layanan Publik"],
+    imageUrl: "/images/kantorpolis.jpg",
+  },
+  {
+    id: 4,
+    lat: 3.75,
+    lng: 98.438,
+    description: "Kantor Pos Stabat",
+    issues: ["Layanan Publik"],
+    imageUrl: "/images/kantor_pos.jpg",
+  },
+  {
+    id: 5,
+    lat: 3.748,
+    lng: 98.442,
+    description: "Balai Pertemuan Kecamatan Stabat",
+    issues: ["Layanan Publik"],
+    imageUrl: "/images/balai_pertemuan.jpg",
   },
 
-  // Disaster Data
+  // 5 Wisata di Kecamatan Stabat
   {
-    id: 103,
-    lat: 3.6601,
-    lng: 98.4971,
-    description: "Banjir di Desa Timbang Lawan",
-    issues: ["Banjir"],
-    imageUrl: "/images/banjir.png",
+    id: 6,
+    lat: 3.758,
+    lng: 98.435,
+    description: "Wisata Alam Bukit Hijau",
+    issues: ["Wisata"],
+    imageUrl: "/images/bukit_hijau.jpg",
+  },
+  {
+    id: 7,
+    lat: 3.74,
+    lng: 98.44,
+    description: "Danau Teratai Stabat",
+    issues: ["Wisata"],
+    imageUrl: "/images/danau_teratai.jpg",
+  },
+  {
+    id: 8,
+    lat: 3.744,
+    lng: 98.437,
+    description: "Taman Kota Stabat",
+    issues: ["Wisata"],
+    imageUrl: "/images/taman_kota.jpg",
+  },
+  {
+    id: 9,
+    lat: 3.749,
+    lng: 98.443,
+    description: "Museum Sejarah Stabat",
+    issues: ["Wisata"],
+    imageUrl: "/images/museum_stabat.jpg",
+  },
+  {
+    id: 10,
+    lat: 3.753,
+    lng: 98.446,
+    description: "Air Terjun Sipiso-piso Mini",
+    issues: ["Wisata"],
+    imageUrl: "/images/air_terjun.jpg",
   },
 ];

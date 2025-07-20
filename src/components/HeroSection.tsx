@@ -25,7 +25,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Selamat Datang di <span className="text-red-500">Desa Blarang</span>
+            Selamat Datang di <span className="text-red-500">Stabat</span>
           </motion.h1>
           <p className="text-lg md:text-xl mb-6 max-w-2xl">
             Desa yang indah dengan kearifan lokal dan potensi alam yang
@@ -73,17 +73,15 @@ const HeroSection = () => {
           />
         </div>
         <div>
-          <h2 className="text-3xl font-bold mb-4">Mengenal Desa Blarang</h2>
+          <h2 className="text-3xl font-bold mb-4">Mengenal Kecamatan Stabat</h2>
           <p className="text-gray-700 leading-relaxed">
-            Desa Blarang memiliki sejarah panjang yang dimulai sejak abad ke-18.
-            Nama "Blarang" berasal dari kata "blara" yang berarti tempat yang
-            subur dan makmur dalam bahasa Karo.
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+             Vel at obcaecati consequuntur expedita doloribus veritatis
+              nam, culpa animi commodi tempora.
           </p>
           <p className="text-gray-700 mt-4 leading-relaxed">
-            Didirikan oleh sekelompok petani yang menetap karena keindahan alam
-            dan kesuburan tanahnya, Desa Blarang tumbuh menjadi komunitas yang
-            kuat dengan nilai-nilai gotong royong dan kearifan lokal yang masih
-            terjaga hingga saat ini.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus, placeat nesciunt sunt incidunt,
+             accusantium itaque magnam suscipit non magni assumenda voluptate distinctio molestiae similique rerum!
           </p>
         </div>
       </div>
