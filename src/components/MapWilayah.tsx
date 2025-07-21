@@ -1,30 +1,31 @@
 "use client";
 
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polygon } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { villageLocations } from "@/app/data/villages";
 
 interface Village {
   id: number;
-  name: string;
+  name?: string;
+  wilayah: string;
   lat: number;
   lng: number;
-  description: string;
+  description?: string;
+  deskripsi?: string;
   imageUrl: string;
-  polygon?: [number, number][]; // Optional polygon data
+  polygon?: [number, number][];
+  nama?: string;
 }
 
 interface MapWilayahProps {
   reports: Village[];
   mapRef?: React.MutableRefObject<{
-    flyToMarker: (id: number | string) => void;
+    flyToMarker: (id: number) => void;
     fitBounds: (bounds: L.LatLngBoundsExpression) => void;
   } | null>;
 }
 
-// Marker icon generator
 const getVillageIcon = (imageUrl: string): L.DivIcon => {
   return L.divIcon({
     className: "",
@@ -51,9 +52,7 @@ const getVillageIcon = (imageUrl: string): L.DivIcon => {
 
 const MapWilayah: React.FC<MapWilayahProps> = ({ reports, mapRef }) => {
   const internalRef = useRef<L.Map | null>(null);
-  const markerRefs = useRef<Record<number | string, L.Marker>>(
-    Object.create(null)
-  );
+  const markerRefs = useRef<Record<number, L.Marker>>(Object.create(null));
 
   const allLocations = reports;
   const center = allLocations.length
@@ -97,7 +96,6 @@ const MapWilayah: React.FC<MapWilayahProps> = ({ reports, mapRef }) => {
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {/* Markers */}
       {reports.map((v) => (
         <Marker
           key={v.id}
@@ -109,26 +107,29 @@ const MapWilayah: React.FC<MapWilayahProps> = ({ reports, mapRef }) => {
         >
           <Popup>
             <div className="text-sm min-w-[200px] space-y-1">
-              <p className="font-semibold">{v.name}</p>
-              <p>{v.description}</p>
+              <p className="font-semibold">{v.nama || v.name}</p>
+              <p>{v.deskripsi || v.description}</p>
+              <p className="italic text-xs">{v.wilayah}</p>
               <img
                 src={v.imageUrl}
-                alt={v.description}
-                className="w-full h-28 object-cover rounded"
+                alt={v.nama || v.name}
+                className="mt-2 rounded"
+                width={180}
+                height={100}
               />
             </div>
           </Popup>
         </Marker>
       ))}
 
-      {/* Polygons */}
+      {/* Jika ada polygon (bisa ditambahkan) */}
       {reports.map(
-        (v, index) =>
+        (v) =>
           v.polygon && (
             <Polygon
-              key={`polygon-${index}`}
+              key={`poly-${v.id}`}
               positions={v.polygon}
-              pathOptions={{ color: "#3b82f6", fillOpacity: 0.2 }}
+              color="#2563eb"
             />
           )
       )}

@@ -16,6 +16,7 @@
     "bcryptjs": "^3.0.2",
     "chart.js": "^4.5.0",
     "cookie": "^1.0.2",
+    "formidable": "^3.5.4",
     "framer-motion": "^12.23.5",
     "jsonwebtoken": "^9.0.2",
     "leaflet": "^1.9.4",
@@ -27,6 +28,7 @@
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0",
+    "react-responsive-carousel": "^3.2.23",
     "recharts": "^3.1.0",
     "zustand": "^5.0.6"
   },

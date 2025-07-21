@@ -8,14 +8,26 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
-  role     Role    @default(USER)
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   @default("user")
   createdAt DateTime @default(now())
 }
 
-enum Role {
-  USER
-  ADMIN
+model Admin {
+  adminId   String   @id
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Umkm {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  wilayah   String
+  deskripsi String
+  lat       Float
+  lng       Float
+  imageUrl  String
+  createdAt DateTime @default(now())
 }

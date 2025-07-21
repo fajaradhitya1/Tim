@@ -4,73 +4,73 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (res.ok) {
-      router.push("/login");
-    } else {
-      const data = await res.json();
-      setError(data?.error || "Registrasi gagal");
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        console.error("Gagal parse JSON:", jsonErr);
+      }
+
+      if (!res.ok) {
+        setError(data?.error || "Registrasi gagal");
+        return;
+      }
+
+      if (data.redirectTo) {
+        router.push(data.redirectTo);
+      }
+    } catch (err) {
+      console.error("Error saat register:", err);
+      setError("Terjadi kesalahan saat menghubungi server.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleRegister}
-        className="bg-white shadow-md rounded p-8 w-full max-w-md"
+    <form onSubmit={handleRegister} className="max-w-sm mx-auto mt-10">
+      <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
+
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="w-full p-2 border rounded mb-3"
+        required
+      />
+      <input
+        type="password"
+        placeholder="Password (min 6 karakter)"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full p-2 border rounded mb-3"
+        required
+      />
+      {error && <p className="text-red-500 mb-2">{error}</p>}
+
+      <button
+        type="submit"
+        className="bg-green-600 text-white px-4 py-2 rounded w-full hover:bg-green-700"
       >
-        <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
-
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-
-        <div className="mb-4">
-          <label className="block mb-1">Email</label>
-          <input
-            type="email"
-            required
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring"
-          />
-        </div>
-
-        <div className="mb-6">
-          <label className="block mb-1">Password</label>
-          <input
-            type="password"
-            required
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-        >
-          Register
-        </button>
-
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Sudah punya akun?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
-            Login di sini
-          </a>
-        </p>
-      </form>
-    </div>
+        Daftar
+      </button>
+    </form>
   );
 }

@@ -12,10 +12,10 @@ import {
   ChevronLeft,
   ChevronRight,
   LayoutDashboard,
+  X,
 } from "lucide-react";
 import clsx from "clsx";
 
-// Daftar menu navigasi
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Beranda", href: "/", icon: Home },
@@ -27,102 +27,184 @@ export default function Navbar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [fontSize, setFontSize] = useState("base");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggleSidebar = () => setCollapsed((prev) => !prev);
+  const toggleMobile = () => setMobileOpen((prev) => !prev);
 
   useEffect(() => {
     document.documentElement.style.fontSize =
       fontSize === "sm" ? "14px" : fontSize === "lg" ? "18px" : "16px";
   }, [fontSize]);
 
+  // Lock scroll saat mobile navbar aktif
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [mobileOpen]);
+
   return (
-    <aside
-      className={clsx(
-        "fixed top-0 left-0 h-screen bg-white shadow-lg border-r transition-all duration-300 ease-in-out z-[9999]",
-        collapsed ? "w-20" : "w-64"
-      )}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-white">
-        {!collapsed ? (
-          <span className="text-lg font-bold text-blue-700">Desa Digital</span>
-        ) : (
-          <span className="text-blue-700 font-bold text-sm">DD</span>
+    <>
+      {/* Tombol Logo kecil di mobile */}
+      <button
+        onClick={toggleMobile}
+        className="fixed top-4 left-4 z-[10001] block md:hidden bg-blue-700 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg"
+        aria-label="Toggle menu"
+      >
+        DD
+      </button>
+
+      {/* Sidebar desktop */}
+      <aside
+        className={clsx(
+          "bg-white shadow-lg border-r fixed top-0 left-0 h-screen z-[9999] transition-all duration-300 ease-in-out",
+          "hidden md:flex flex-col",
+          collapsed ? "w-20" : "w-64"
         )}
-        <button
-          onClick={toggleSidebar}
-          className="text-gray-500 hover:text-blue-600"
-        >
-          {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-        </button>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex flex-col gap-1 p-3">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname === href;
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={clsx(
-                "flex items-center gap-3 p-2 rounded-md text-sm transition group",
-                isActive
-                  ? "bg-blue-100 text-blue-700"
-                  : "hover:bg-gray-100 text-gray-700"
-              )}
-              title={collapsed ? label : ""}
-            >
-              <Icon size={20} />
-              {!collapsed && <span>{label}</span>}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Auth Buttons */}
-      <div className="mt-auto p-3 flex flex-col gap-2 border-t">
-        <Link
-          href="/login"
-          className="flex items-center gap-2 p-2 text-sm border border-blue-600 text-blue-600 rounded hover:bg-blue-50"
-          title={collapsed ? "Login" : ""}
-        >
-          <LogIn size={18} />
-          {!collapsed && <span>Login</span>}
-        </Link>
-        <Link
-          href="/register"
-          className="flex items-center gap-2 p-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-          title={collapsed ? "Register" : ""}
-        >
-          <UserPlus size={18} />
-          {!collapsed && <span>Register</span>}
-        </Link>
-      </div>
-
-      {/* Font Size Controls */}
-      <div className="absolute bottom-5 right-5 bg-white rounded shadow text-sm">
-        <div className="flex border">
+      >
+        <div className="flex items-center justify-between p-4 border-b bg-white">
+          {!collapsed ? (
+            <span className="text-lg font-bold text-blue-700">
+              Desa Digital
+            </span>
+          ) : (
+            <span className="text-blue-700 font-bold text-sm">DD</span>
+          )}
           <button
-            onClick={() => setFontSize("sm")}
-            className="px-2 py-1 border-r hover:bg-gray-100"
+            onClick={toggleSidebar}
+            className="text-gray-500 hover:text-blue-600"
+            aria-label="Toggle sidebar"
           >
-            A-
-          </button>
-          <button
-            onClick={() => setFontSize("base")}
-            className="px-2 py-1 border-r hover:bg-gray-100"
-          >
-            A
-          </button>
-          <button
-            onClick={() => setFontSize("lg")}
-            className="px-2 py-1 hover:bg-gray-100"
-          >
-            A+
+            {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
           </button>
         </div>
-      </div>
-    </aside>
+
+        <nav className="flex flex-col gap-1 p-3 flex-grow">
+          {navItems.map(({ href, label, icon: Icon }) => {
+            const isActive = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={clsx(
+                  "flex items-center gap-3 p-2 rounded-md text-sm transition group",
+                  isActive
+                    ? "bg-blue-100 text-blue-700"
+                    : "hover:bg-gray-100 text-gray-700"
+                )}
+                title={collapsed ? label : ""}
+              >
+                <Icon size={20} />
+                {!collapsed && <span>{label}</span>}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="mt-auto p-3 flex flex-col gap-2 border-t">
+          <Link
+            href="/login"
+            className="flex items-center gap-2 p-2 text-sm border border-blue-600 text-blue-600 rounded hover:bg-blue-50"
+            title={collapsed ? "Login" : ""}
+          >
+            <LogIn size={18} />
+            {!collapsed && <span>Login</span>}
+          </Link>
+          <Link
+            href="/register"
+            className="flex items-center gap-2 p-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            title={collapsed ? "Register" : ""}
+          >
+            <UserPlus size={18} />
+            {!collapsed && <span>Register</span>}
+          </Link>
+        </div>
+
+        <div className="absolute bottom-5 right-5 bg-white rounded shadow text-sm hidden md:block">
+          <div className="flex border">
+            <button
+              onClick={() => setFontSize("sm")}
+              className="px-2 py-1 border-r hover:bg-gray-100"
+            >
+              A-
+            </button>
+            <button
+              onClick={() => setFontSize("base")}
+              className="px-2 py-1 border-r hover:bg-gray-100"
+            >
+              A
+            </button>
+            <button
+              onClick={() => setFontSize("lg")}
+              className="px-2 py-1 hover:bg-gray-100"
+            >
+              A+
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Navbar mobile full layar tanpa overlay */}
+      {mobileOpen && (
+        <aside className="fixed top-0 left-0 h-screen w-full bg-white z-[10001] flex flex-col">
+          <div className="flex items-center justify-between p-4 border-b">
+            <span className="text-lg font-bold text-blue-700">
+              Desa Digital
+            </span>
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="text-gray-500 hover:text-blue-600"
+              aria-label="Close menu"
+            >
+              <X size={24} />
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-1 p-3 flex-grow overflow-y-auto">
+            {navItems.map(({ href, label, icon: Icon }) => {
+              const isActive = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setMobileOpen(false)}
+                  className={clsx(
+                    "flex items-center gap-3 p-2 rounded-md text-sm transition group",
+                    isActive
+                      ? "bg-blue-100 text-blue-700"
+                      : "hover:bg-gray-100 text-gray-700"
+                  )}
+                >
+                  <Icon size={20} />
+                  <span>{label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="p-3 flex flex-col gap-2 border-t">
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 p-2 text-sm border border-blue-600 text-blue-600 rounded hover:bg-blue-50"
+            >
+              <LogIn size={18} />
+              <span>Login</span>
+            </Link>
+            <Link
+              href="/register"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 p-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              <UserPlus size={18} />
+              <span>Register</span>
+            </Link>
+          </div>
+        </aside>
+      )}
+    </>
   );
 }
