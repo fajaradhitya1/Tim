@@ -8,7 +8,7 @@ export default function AdminDashboard() {
   const [umkmData, setUmkmData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Validasi admin dummy (ganti dengan session real)
+  // Dummy validasi admin (ganti dengan session asli jika ada)
   useEffect(() => {
     const isAdmin = true;
     if (!isAdmin) {
@@ -16,6 +16,7 @@ export default function AdminDashboard() {
     }
   }, [router]);
 
+  // Fetch data UMKM
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -32,32 +33,34 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 5000); // polling setiap 5 detik
+    const interval = setInterval(fetchData, 5000); // polling tiap 5 detik
     return () => clearInterval(interval);
   }, []);
 
-  const handleDelete = async (id: number) => {
-    const realId = id - 1000;
+  // Hapus data UMKM (dengan id offset)
+  const handleDelete = async (idOffset: number) => {
     const confirmDelete = window.confirm("Yakin ingin menghapus data ini?");
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`/api/auth/umkm?id=${realId}`, {
+      const res = await fetch(`/api/auth/umkm/${idOffset}`, {
         method: "DELETE",
       });
+      const result = await res.json();
       if (res.ok) {
         alert("Data berhasil dihapus.");
         fetchData();
       } else {
-        alert("Gagal menghapus data.");
+        alert("Gagal menghapus: " + result.message);
       }
     } catch (error) {
-      alert("Gagal menghapus data.");
+      alert("Terjadi kesalahan saat menghapus data.");
     }
   };
 
   return (
     <main className="min-h-screen bg-gray-100 p-8">
+      {/* Header */}
       <header className="mb-8">
         <h1 className="text-4xl font-bold text-gray-800">Dashboard Admin</h1>
         <p className="text-gray-500 mt-1">Selamat datang di panel admin</p>
@@ -83,7 +86,7 @@ export default function AdminDashboard() {
         />
       </section>
 
-      {/* Data UMKM */}
+      {/* Tabel Data UMKM */}
       <section className="mt-12">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">
           Data UMKM yang Diunggah
@@ -138,6 +141,7 @@ export default function AdminDashboard() {
   );
 }
 
+// Komponen kartu statistik
 function DashboardCard({
   title,
   value,

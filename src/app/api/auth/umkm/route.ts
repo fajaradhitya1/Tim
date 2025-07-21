@@ -3,7 +3,7 @@ import path from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET: Ambil semua data
+// GET: Ambil semua data UMKM
 export async function GET() {
   const data = await prisma.umkm.findMany();
   const withOffset = data.map((d) => ({ ...d, id: d.id + 1000 }));
@@ -46,30 +46,10 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ...newUMKM, id: newUMKM.id + 1000 });
 }
 
-// DELETE: Hapus data UMKM berdasarkan ID
-export async function DELETE(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const idParam = searchParams.get("id");
-
-  if (!idParam) {
-    return NextResponse.json(
-      { message: "ID wajib diberikan" },
-      { status: 400 }
-    );
-  }
-
-  try {
-    const realId = parseInt(idParam) - 1000; // Kembalikan ke ID asli (tanpa offset)
-    await prisma.umkm.delete({
-      where: { id: realId },
-    });
-
-    return NextResponse.json({ message: "Berhasil dihapus" });
-  } catch (error) {
-    console.error("Gagal hapus data UMKM:", error);
-    return NextResponse.json(
-      { message: "Gagal menghapus data" },
-      { status: 500 }
-    );
-  }
+// DELETE: Nonaktifkan, karena DELETE sekarang pakai [id]/route.ts
+export async function DELETE() {
+  return NextResponse.json(
+    { message: "Gunakan endpoint /api/auth/umkm/[id] untuk menghapus" },
+    { status: 405 }
+  );
 }
