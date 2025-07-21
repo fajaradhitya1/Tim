@@ -135,7 +135,10 @@ const UMKMCarousel = () => {
                 {umkmItems[index].title}
               </h3>
               <p className="text-gray-700">{umkmItems[index].product}</p>
-              <button className="mt-4 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition">
+              <button
+                onClick={() => (window.location.href = "/produk-unggulan")}
+                className="mt-4 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition"
+              >
                 Lihat Detail
               </button>
             </div>
