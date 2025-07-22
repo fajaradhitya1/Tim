@@ -8,10 +8,27 @@ import WilayahFilter from "@/components/WilayahFilter";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 
-// Dynamic import peta
 const MapWilayah = dynamic(() => import("@/components/MapWilayah"), {
   ssr: false,
 });
+
+function getNearestWilayah(
+  coords: { lat: number; lng: number },
+  list: typeof villageLocations
+) {
+  let minDistance = Infinity;
+  let nearest = list[0];
+  for (const loc of list) {
+    const dist = Math.sqrt(
+      Math.pow(loc.lat - coords.lat, 2) + Math.pow(loc.lng - coords.lng, 2)
+    );
+    if (dist < minDistance) {
+      minDistance = dist;
+      nearest = loc;
+    }
+  }
+  return nearest;
+}
 
 export default function ProdukUnggulanPage() {
   const { wilayahData, setWilayahData, selectedWilayah } = useWilayahStore();
@@ -22,6 +39,7 @@ export default function ProdukUnggulanPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const [nama, setNama] = useState("");
   const [wilayah, setWilayah] = useState("");
@@ -31,22 +49,48 @@ export default function ProdukUnggulanPage() {
     null
   );
 
+  const [enableGeo, setEnableGeo] = useState(true);
+  const [isOutside, setIsOutside] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     const loginStatus = localStorage.getItem("isUserLoggedIn") === "true";
     const email = localStorage.getItem("userEmail");
+    const id = localStorage.getItem("userId");
     setIsLoggedIn(loginStatus);
     setUserEmail(email);
+    setUserId(id);
   }, []);
 
   useEffect(() => {
+    if (!enableGeo) return;
+
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (pos) =>
-          setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        (err) => console.warn("Gagal ambil lokasi:", err)
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const posCoords = { lat: latitude, lng: longitude };
+          setCoords(posCoords);
+
+          const isStabat =
+            latitude >= 3.68 &&
+            latitude <= 3.79 &&
+            longitude >= 98.41 &&
+            longitude <= 98.51;
+
+          setIsOutside(!isStabat);
+
+          const nearest = getNearestWilayah(posCoords, villageLocations);
+          setWilayah(nearest.wilayah);
+        },
+        (err) => {
+          console.warn("Gagal ambil lokasi:", err);
+          setCoords(null);
+          setIsOutside(true);
+        }
       );
     }
-  }, []);
+  }, [enableGeo]);
 
   useEffect(() => {
     setWilayahData(villageLocations);
@@ -80,8 +124,20 @@ export default function ProdukUnggulanPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!coords || !imageFile)
-      return alert("Lengkapi semua data dan aktifkan lokasi");
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    if (!coords || !imageFile || (!wilayah && (isOutside || !enableGeo))) {
+      alert("Lengkapi data dan wilayah. Aktifkan lokasi atau pilih manual.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!userId) {
+      alert("User belum ditemukan. Silakan login ulang.");
+      setIsSubmitting(false);
+      return;
+    }
 
     const formData = new FormData();
     formData.append("nama", nama);
@@ -90,6 +146,7 @@ export default function ProdukUnggulanPage() {
     formData.append("lat", String(coords.lat));
     formData.append("lng", String(coords.lng));
     formData.append("image", imageFile);
+    formData.append("userId", userId);
 
     const res = await fetch("/api/auth/umkm", {
       method: "POST",
@@ -107,6 +164,7 @@ export default function ProdukUnggulanPage() {
     } else {
       alert("Gagal menambahkan UMKM.");
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -115,26 +173,24 @@ export default function ProdukUnggulanPage() {
 
       <section className="max-w-6xl mx-auto px-4 py-8">
         <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-800 leading-tight">
+          <h1 className="text-4xl font-bold text-gray-800">
             Produk Unggulan <span className="text-green-600">UMKM</span>
           </h1>
-          <p className="text-gray-500 text-sm mt-2">
+          <p className="text-sm text-gray-500">
             Eksplorasi produk lokal terbaik dari berbagai wilayah.
           </p>
           {isLoggedIn && userEmail && (
-            <p className="mt-4 text-sm text-gray-600">
+            <p className="mt-3 text-gray-600 text-sm">
               Selamat datang, <span className="font-semibold">{userEmail}</span>
-              !
             </p>
           )}
           {isLoggedIn && (
             <button
               onClick={() => {
-                localStorage.removeItem("isUserLoggedIn");
-                localStorage.removeItem("userEmail");
+                localStorage.clear();
                 window.location.href = "/login";
               }}
-              className="mt-3 text-sm text-red-500 underline"
+              className="mt-2 text-sm text-red-500 underline"
             >
               Logout
             </button>
@@ -146,20 +202,18 @@ export default function ProdukUnggulanPage() {
             {filtered.map((item) => (
               <div
                 key={`${item.id}-${item.nama}`}
-                className="min-w-[300px] bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                className="min-w-[300px] bg-white rounded-xl shadow hover:shadow-lg transition"
                 onClick={scrollToMap}
               >
                 <Image
                   src={item.imageUrl || "/produk/default.jpg"}
-                  alt={item.nama || "Produk"}
+                  alt={item.nama || "Produk UMKM"}
                   width={300}
                   height={200}
-                  className="object-cover w-full h-48 rounded-t-xl"
-                />
+                  className="w-full h-48 object-cover rounded-t-xl"
+                /> 
                 <div className="p-4">
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    {item.nama}
-                  </h2>
+                  <h2 className="text-lg font-semibold">{item.nama}</h2>
                   <p className="text-sm text-gray-500">{item.wilayah}</p>
                   <p className="text-sm text-gray-600 mt-1 line-clamp-3">
                     {item.deskripsi}
@@ -171,7 +225,7 @@ export default function ProdukUnggulanPage() {
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-4 py-8">
+      <section className="max-w-6xl mx-auto px-4 py-6">
         <h2 className="text-xl font-semibold mb-3">Filter Wilayah</h2>
         <WilayahFilter />
       </section>
@@ -183,18 +237,17 @@ export default function ProdukUnggulanPage() {
 
       {isLoggedIn ? (
         <section className="max-w-5xl mx-auto px-6 py-10">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
-            <div className="bg-green-600 text-white text-xl font-semibold px-6 py-4 rounded-t-2xl">
+          <div className="bg-white border shadow rounded-2xl">
+            <div className="bg-green-600 text-white px-6 py-4 rounded-t-2xl font-semibold text-lg">
               Tambah Produk UMKM
             </div>
-
             <form
               onSubmit={handleSubmit}
-              className="grid md:grid-cols-2 gap-6 px-6 py-6"
+              className="grid md:grid-cols-2 gap-6 p-6"
             >
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Nama Produk
                   </label>
                   <input
@@ -202,43 +255,66 @@ export default function ProdukUnggulanPage() {
                     value={nama}
                     onChange={(e) => setNama(e.target.value)}
                     required
-                    placeholder="Contoh: Kopi Gayo"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                    className="w-full border px-4 py-2 rounded shadow-sm"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Wilayah
+                <div className="space-y-2">
+                  <label className="inline-flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={enableGeo}
+                      onChange={(e) => setEnableGeo(e.target.checked)}
+                    />
+                    <span className="text-sm">Gunakan Lokasi Saya</span>
                   </label>
-                  <input
-                    type="text"
-                    value={wilayah}
-                    onChange={(e) => setWilayah(e.target.value)}
-                    required
-                    placeholder="Contoh: Desa Timbang Langkat"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 outline-none"
-                  />
+
+                  {(!enableGeo || isOutside) && (
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Wilayah
+                      </label>
+                      <select
+                        value={wilayah}
+                        onChange={(e) => {
+                          const selected = villageLocations.find(
+                            (v) => v.wilayah === e.target.value
+                          );
+                          setWilayah(e.target.value);
+                          if (selected)
+                            setCoords({ lat: selected.lat, lng: selected.lng });
+                        }}
+                        required
+                        className="w-full border px-4 py-2 rounded shadow-sm"
+                      >
+                        <option value="">-- Pilih Wilayah --</option>
+                        {villageLocations.map((v) => (
+                          <option key={v.id} value={v.wilayah}>
+                            {v.wilayah}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Deskripsi
                   </label>
                   <textarea
                     value={deskripsi}
                     onChange={(e) => setDeskripsi(e.target.value)}
                     required
-                    rows={5}
-                    placeholder="Tuliskan deskripsi produk"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 outline-none"
+                    className="w-full border px-4 py-2 rounded shadow-sm"
+                    rows={4}
                   />
                 </div>
               </div>
 
               <div className="flex flex-col justify-between gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Gambar Produk
                   </label>
                   <input
@@ -246,16 +322,17 @@ export default function ProdukUnggulanPage() {
                     accept="image/*"
                     onChange={(e) => setImageFile(e.target.files?.[0] || null)}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white shadow-sm"
+                    className="w-full px-4 py-2 border rounded bg-white shadow-sm"
                   />
                 </div>
 
                 <div className="text-right mt-auto">
                   <button
                     type="submit"
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md shadow-md transition"
+                    disabled={isSubmitting}
+                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md shadow-md disabled:opacity-50"
                   >
-                    Simpan UMKM
+                    {isSubmitting ? "Menyimpan..." : "Simpan UMKM"}
                   </button>
                 </div>
               </div>

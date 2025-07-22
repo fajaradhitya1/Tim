@@ -7,13 +7,15 @@ async function main() {
   const hashedUserPassword = await bcrypt.hash("123456", 10);
   const hashedAdminPassword = await bcrypt.hash("adminpass", 10);
 
-  await prisma.user.create({
+  // ✅ Buat user terlebih dahulu
+  const user = await prisma.user.create({
     data: {
       email: "user@example.com",
       password: hashedUserPassword,
     },
   });
 
+  // ✅ Buat admin
   await prisma.admin.create({
     data: {
       adminId: "admin123",
@@ -21,6 +23,7 @@ async function main() {
     },
   });
 
+  // ✅ Buat UMKM yang terhubung dengan user
   await prisma.umkm.create({
     data: {
       nama: "Basreng Pedas",
@@ -29,6 +32,7 @@ async function main() {
       lat: 3.802,
       lng: 98.403,
       imageUrl: "/images/basreng.jpg",
+      userId: user.id, // ← wajib ini!
     },
   });
 

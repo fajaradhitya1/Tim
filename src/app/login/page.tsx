@@ -32,12 +32,15 @@ export default function LoginPage() {
     // ✅ Simpan status login ke localStorage
     if (data.role === "user") {
       localStorage.setItem("isUserLoggedIn", "true");
-      localStorage.setItem("userEmail", identifier); // simpan info user
+      localStorage.setItem("userEmail", data.email); // dari backend
+      localStorage.setItem("userId", data.id); // dari backend
     }
+
     if (data.role === "admin") {
       localStorage.setItem("isAdminLoggedIn", "true");
     }
 
+    // ✅ Redirect ke halaman yang sesuai
     if (data.redirectTo) {
       window.location.href = data.redirectTo;
     }
@@ -58,6 +61,7 @@ export default function LoginPage() {
         onChange={(e) => setIdentifier(e.target.value)}
         className="w-full p-2 border rounded mb-3"
       />
+
       <input
         type="password"
         placeholder="Password"
@@ -65,6 +69,7 @@ export default function LoginPage() {
         onChange={(e) => setPassword(e.target.value)}
         className="w-full p-2 border rounded mb-3"
       />
+
       {error && <p className="text-red-500 mb-2">{error}</p>}
 
       <button
