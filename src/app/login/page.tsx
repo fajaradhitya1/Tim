@@ -59,7 +59,7 @@ export default function LoginPage() {
         placeholder="ID Admin atau Email"
         value={identifier}
         onChange={(e) => setIdentifier(e.target.value)}
-        className="w-full p-2 border rounded mb-3"
+        className="w-full p-2 border rounded mb-3 text-color-black"
       />
 
       <input

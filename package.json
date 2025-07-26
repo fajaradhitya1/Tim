@@ -10,12 +10,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.0.0",
     "@prisma/client": "^6.12.0",
     "@react-google-maps/api": "^2.20.7",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
+    "bootstrap": "^5.3.7",
     "chart.js": "^4.5.0",
     "cookie": "^1.0.2",
+    "date-fns": "^4.1.0",
     "formidable": "^3.5.4",
     "framer-motion": "^12.23.5",
     "jsonwebtoken": "^9.0.2",
@@ -30,6 +33,7 @@
     "react-leaflet": "^5.0.0",
     "react-responsive-carousel": "^3.2.23",
     "recharts": "^3.1.0",
+    "sweetalert2": "^11.22.2",
     "zustand": "^5.0.6"
   },
   "devDependencies": {

@@ -16,6 +16,7 @@ interface Village {
   imageUrl: string;
   polygon?: [number, number][];
   nama?: string;
+  userId?: string;
 }
 
 interface MapWilayahProps {
@@ -26,6 +27,7 @@ interface MapWilayahProps {
   } | null>;
 }
 
+// ✅ Marker dengan gambar berbentuk lingkaran
 const getVillageIcon = (imageUrl: string): L.DivIcon => {
   return L.divIcon({
     className: "",
@@ -50,13 +52,49 @@ const getVillageIcon = (imageUrl: string): L.DivIcon => {
   });
 };
 
+// ✅ Offset marker jika ada yang berada di koordinat sama
+function offsetMarkers(locations: Village[]) {
+  const grouped: Record<string, Village[]> = {};
+  const OFFSET_STEP = 0.0001;
+
+  // Group berdasarkan posisi lat-lng (dibulatkan)
+  locations.forEach((item) => {
+    const key = `${item.lat.toFixed(6)}-${item.lng.toFixed(6)}`;
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(item);
+  });
+
+  const adjusted: Village[] = [];
+
+  Object.values(grouped).forEach((group) => {
+    group.forEach((item, i) => {
+      if (group.length === 1) {
+        adjusted.push(item);
+      } else {
+        const angle = (i / group.length) * 2 * Math.PI;
+        const offsetLat = Math.sin(angle) * OFFSET_STEP;
+        const offsetLng = Math.cos(angle) * OFFSET_STEP;
+
+        adjusted.push({
+          ...item,
+          lat: item.lat + offsetLat,
+          lng: item.lng + offsetLng,
+        });
+      }
+    });
+  });
+
+  return adjusted;
+}
+
 const MapWilayah: React.FC<MapWilayahProps> = ({ reports, mapRef }) => {
   const internalRef = useRef<L.Map | null>(null);
   const markerRefs = useRef<Record<number, L.Marker>>(Object.create(null));
 
-  const allLocations = reports;
-  const center = allLocations.length
-    ? { lat: allLocations[0].lat, lng: allLocations[0].lng }
+  const adjustedReports = offsetMarkers(reports);
+
+  const center = adjustedReports.length
+    ? { lat: adjustedReports[0].lat, lng: adjustedReports[0].lng }
     : { lat: 3.6054, lng: 98.6794 };
 
   const handleWhenReady = () => {
@@ -77,11 +115,20 @@ const MapWilayah: React.FC<MapWilayahProps> = ({ reports, mapRef }) => {
       };
     }
 
-    if (allLocations.length > 0) {
-      const bounds = L.latLngBounds(allLocations.map((v) => [v.lat, v.lng]));
-      map.fitBounds(bounds, { padding: [30, 30] });
+    // ⛳ Tambahkan logika zoom out di sini
+    const bounds = L.latLngBounds(
+      reports.map((v) => [v.lat, v.lng] as [number, number])
+    );
+    const padded = bounds.pad(0.4);
+    if (padded.isValid()) {
+      map.fitBounds(padded, {
+        padding: [40, 40],
+        maxZoom: 11, // jangan terlalu dekat
+      });
     }
   };
+
+
 
   return (
     <MapContainer
@@ -96,43 +143,49 @@ const MapWilayah: React.FC<MapWilayahProps> = ({ reports, mapRef }) => {
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {reports.map((v) => (
-        <Marker
-          key={v.id}
-          position={[v.lat, v.lng]}
-          icon={getVillageIcon(v.imageUrl)}
-          ref={(ref) => {
-            if (ref) markerRefs.current[v.id] = ref;
-          }}
-        >
-          <Popup>
-            <div className="text-sm min-w-[200px] space-y-1">
-              <p className="font-semibold">{v.nama || v.name}</p>
-              <p>{v.deskripsi || v.description}</p>
-              <p className="italic text-xs">{v.wilayah}</p>
-              <img
-                src={v.imageUrl}
-                alt={v.nama || v.name}
-                className="mt-2 rounded"
-                width={180}
-                height={100}
-              />
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+      {/* ✅ Marker untuk desa & UMKM */}
+      {adjustedReports.map((v) => {
+        const keyPrefix = v.userId ? "umkm" : "lokal";
+        const markerKey = `${keyPrefix}-${v.id}`;
+        return (
+          <Marker
+            key={markerKey}
+            position={[v.lat, v.lng]}
+            icon={getVillageIcon(v.imageUrl)}
+            ref={(ref) => {
+              if (ref) markerRefs.current[v.id] = ref;
+            }}
+          >
+            <Popup>
+              <div className="text-sm min-w-[200px] space-y-1">
+                <p className="font-semibold">{v.nama || v.name}</p>
+                <p>{v.deskripsi || v.description}</p>
+                <p className="italic text-xs">{v.wilayah}</p>
+                <img
+                  src={v.imageUrl}
+                  alt={v.nama || v.name}
+                  className="mt-2 rounded"
+                  width={180}
+                  height={100}
+                />
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
 
-      {/* Jika ada polygon (bisa ditambahkan) */}
-      {reports.map(
-        (v) =>
-          v.polygon && (
-            <Polygon
-              key={`poly-${v.id}`}
-              positions={v.polygon}
-              color="#2563eb"
-            />
-          )
-      )}
+      {/* ✅ Polygon batas wilayah */}
+      {adjustedReports.map((v) => {
+        if (!v.polygon) return null;
+        const keyPrefix = v.userId ? "umkm" : "lokal";
+        return (
+          <Polygon
+            key={`poly-${keyPrefix}-${v.id}`}
+            positions={v.polygon}
+            color="#2563eb"
+          />
+        );
+      })}
     </MapContainer>
   );
 };

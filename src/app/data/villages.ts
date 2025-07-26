@@ -89,7 +89,7 @@ export const villageLocations = [
     lat: 3.710736,
     lng: 98.479412,
     description: "Produk Unggulan: Basreng",
-    imageUrl: "/images/basreng.jpg",
+    imageUrl: "/images/basreng.webp",
   },
   {
     id: 11,

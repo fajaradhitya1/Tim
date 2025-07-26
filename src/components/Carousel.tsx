@@ -10,73 +10,73 @@ const umkmItems = [
     id: 1,
     title: "Desa Mangga",
     product: "Pembuatan Gula Aren",
-    image: "/images/umkm/gulaaren.jpg",
+    image: "/images/gulAren.jpg",
   },
   {
     id: 2,
     title: "Desa Banyumas",
     product: "Pembuatan Jamu",
-    image: "/images/umkm/jamu.jpg",
+    image: "/images/jamu.jpg",
   },
   {
     id: 3,
     title: "Desa Kwala Begumit",
     product: "Pembuatan Basreng",
-    image: "/images/umkm/basreng.jpg",
+    image: "/images/basreng.webp",
   },
   {
     id: 4,
     title: "Desa Ara Condong",
     product: "Pembuatan Keripik Pisang Sale",
-    image: "/images/umkm/pisangsale.jpg",
+    image: "/images/pisangsale.jpg",
   },
   {
     id: 5,
     title: "Desa Pantai Gemi",
     product: "Pembuatan Manisan Kelapa",
-    image: "/images/umkm/manisankelapa.jpg",
+    image: "/images/manisankelapa.webp",
   },
   {
     id: 6,
     title: "Kelurahan Stabat Baru",
     product: "Pembuatan Haluwa",
-    image: "/images/umkm/haluwa.jpg",
+    image: "/images/haluakenari.png",
   },
   {
     id: 7,
     title: "Kelurahan Kwala Bingai",
     product: "Pembuatan Keripik Kentang",
-    image: "/images/umkm/kentang.jpg",
+    image: "/images/keripik.JPG",
   },
   {
     id: 8,
     title: "Kelurahan Perdamaian",
     product: "Pembuatan Kentang Mustafa",
-    image: "/images/umkm/kentangmustafa.jpg",
+    image: "/images/kentangmustofa.jpg",
   },
   {
     id: 9,
     title: "Kelurahan Dendang",
     product: "Pembuatan Rengginang Ubi",
-    image: "/images/umkm/rengginang.jpg",
+    image: "/images/rengginang.webp",
   },
   {
     id: 10,
     title: "Kelurahan Paya Mabar",
     product: "Pembuatan Susu Kedelai",
-    image: "/images/umkm/susukedelai.jpg",
+    image: "/images/umkm/susu.jpg",
   },
   {
     id: 11,
     title: "Kelurahan Sidomulyo",
     product: "Pembuatan Dodol Ubi",
-    image: "/images/umkm/dodolubi.jpg",
+    image: "/images/dodolubi.webp",
   },
   {
     id: 12,
     title: "Desa Karang Rejo",
     product: "Pembuatan Keripik Tempe",
-    image: "/images/umkm/keripiktempe.jpg",
+    image: "/images/keripiktempe.jpg",
   },
 ];
 
@@ -121,15 +121,15 @@ const UMKMCarousel = () => {
             dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={handleDragEnd}
           >
-            <div className="w-full md:w-1/2">
+            <div className="relative w-full md:w-1/2 aspect-[3/2]">
               <Image
                 src={umkmItems[index].image}
                 alt={umkmItems[index].title}
-                width={600}
-                height={400}
-                className="w-full h-full object-cover rounded-l-xl"
+                fill
+                className="object-cover rounded-l-xl"
               />
             </div>
+
             <div className="w-full md:w-1/2 p-6 space-y-4">
               <h3 className="text-xl font-semibold text-green-700">
                 {umkmItems[index].title}

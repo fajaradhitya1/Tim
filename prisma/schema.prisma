@@ -13,8 +13,7 @@ model User {
   password  String
   role      String   @default("user")
   createdAt DateTime @default(now())
-
-  umkm      Umkm[]   // relasi ke banyak UMKM
+  umkm      Umkm[]
 }
 
 model Admin {
@@ -27,12 +26,30 @@ model Umkm {
   id        Int      @id @default(autoincrement())
   nama      String
   wilayah   String
+  jalan     String?
   deskripsi String
   lat       Float
   lng       Float
   imageUrl  String
   createdAt DateTime @default(now())
-
+  status    String   @default("Menunggu") // ✅ Kolom status ditambahkan
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Umkm_userId_fkey")
 }
+
+model SumberDayaMasyarakat {
+  id        String   @id @default(cuid())
+  nama      String
+  telepon   String
+  produk    String
+  lainnya   String?
+  alamat    String
+  kelurahan String
+  jenis     String
+  keterangan String
+  imageUrl    String? 
+  createdAt DateTime @default(now())
+}
+

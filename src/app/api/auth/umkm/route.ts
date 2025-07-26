@@ -3,19 +3,23 @@ import path from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET: Ambil semua data UMKM
-export async function GET() {
-  try {
-    const data = await prisma.umkm.findMany();
-    const withOffset = data.map((d) => ({ ...d, id: d.id + 1000 }));
-    return NextResponse.json(withOffset);
-  } catch (error) {
-    console.error("❌ UMKM GET ERROR:", error);
-    return NextResponse.json({ message: "Server error" }, { status: 500 });
+// 🔄 Reverse geocoding
+async function reverseGeocode(lat: number, lng: number) {
+  const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+  const res = await fetch(url, {
+    headers: { "User-Agent": "umkm-app" },
+  });
+
+  if (!res.ok) {
+    console.error("Gagal reverse geocoding:", res.status);
+    return null;
   }
+
+  const data = await res.json();
+  return data.address?.road || "Jalan tidak diketahui";
 }
 
-// POST: Simpan data UMKM + upload gambar
+// 📝 POST: Tambah UMKM
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -28,25 +32,19 @@ export async function POST(req: NextRequest) {
     const userId = formData.get("userId") as string;
     const image = formData.get("image") as File;
 
-    if (!userId) {
+    if (!userId || !image || !image.name) {
       return NextResponse.json(
-        { message: "User ID wajib ada" },
+        { message: "Data tidak lengkap" },
         { status: 400 }
       );
     }
 
-    if (!image || !image.name) {
-      return NextResponse.json(
-        { message: "No image uploaded" },
-        { status: 400 }
-      );
-    }
+    const roadName = await reverseGeocode(lat, lng);
 
     const bytes = await image.arrayBuffer();
     const buffer = Buffer.from(bytes);
     const fileName = `${Date.now()}-${image.name.replace(/\s+/g, "_")}`;
     const filePath = path.join(process.cwd(), "public", "uploads", fileName);
-
     await writeFile(filePath, buffer);
 
     const newUMKM = await prisma.umkm.create({
@@ -54,10 +52,12 @@ export async function POST(req: NextRequest) {
         nama,
         wilayah,
         deskripsi,
+        jalan: roadName,
         lat,
         lng,
         imageUrl: `/uploads/${fileName}`,
-        userId, // ✅ penting
+        userId,
+        status: "Menunggu",
       },
     });
 
@@ -68,10 +68,16 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE: Nonaktifkan karena DELETE pakai [id]/route.ts
-export async function DELETE() {
-  return NextResponse.json(
-    { message: "Gunakan endpoint /api/auth/umkm/[id] untuk menghapus" },
-    { status: 405 }
-  );
+// 📥 GET: Ambil semua data UMKM
+export async function GET() {
+  try {
+    const umkm = await prisma.umkm.findMany();
+    return NextResponse.json(umkm);
+  } catch (error) {
+    console.error("❌ UMKM GET ERROR:", error);
+    return NextResponse.json(
+      { message: "Gagal ambil data UMKM" },
+      { status: 500 }
+    );
+  }
 }

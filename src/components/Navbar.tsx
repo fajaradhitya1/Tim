@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Home,
   MapPin,
@@ -21,15 +21,21 @@ const navItems = [
   { label: "Beranda", href: "/", icon: Home },
   { label: "Peta", href: "/peta", icon: MapPin },
   { label: "Produk Unggulan", href: "/produk-unggulan", icon: Package },
+  // Login & Register akan ditampilkan secara terpisah di bawah
 ];
 
-export default function Navbar() {
+export default function Navbar({
+  collapsed,
+  setCollapsed,
+}: {
+  collapsed: boolean;
+  setCollapsed: (val: boolean) => void;
+}) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
   const [fontSize, setFontSize] = useState("base");
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const toggleSidebar = () => setCollapsed((prev) => !prev);
+  const toggleSidebar = () => setCollapsed(!collapsed);
   const toggleMobile = () => setMobileOpen((prev) => !prev);
 
   useEffect(() => {
@@ -37,46 +43,42 @@ export default function Navbar() {
       fontSize === "sm" ? "14px" : fontSize === "lg" ? "18px" : "16px";
   }, [fontSize]);
 
-  // Lock scroll saat mobile navbar aktif
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
   }, [mobileOpen]);
 
   return (
     <>
-      {/* Tombol Logo kecil di mobile */}
+      {/* Tombol Logo Mobile */}
       <button
         onClick={toggleMobile}
         className="fixed top-4 left-4 z-[10001] block md:hidden bg-blue-700 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg"
         aria-label="Toggle menu"
       >
-        DD
+        Menu
       </button>
 
-      {/* Sidebar desktop */}
+      {/* Sidebar Desktop */}
       <aside
         className={clsx(
           "bg-white shadow-lg border-r fixed top-0 left-0 h-screen z-[9999] transition-all duration-300 ease-in-out",
           "hidden md:flex flex-col",
-          collapsed ? "w-20" : "w-64"
+          collapsed ? "w-28" : "w-64"
         )}
       >
         <div className="flex items-center justify-between p-4 border-b bg-white">
-          {!collapsed ? (
-            <span className="text-lg font-bold text-blue-700">
-              Desa Digital
-            </span>
-          ) : (
-            <span className="text-blue-700 font-bold text-sm">DD</span>
-          )}
+          <span
+            className={clsx(
+              "text-blue-700 font-bold truncate",
+              collapsed ? "text-sm" : "text-lg"
+            )}
+          >
+            {collapsed ? "Menu" : "Desa Digital"}
+          </span>
+
           <button
             onClick={toggleSidebar}
             className="text-gray-500 hover:text-blue-600"
-            aria-label="Toggle sidebar"
           >
             {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
           </button>
@@ -102,17 +104,18 @@ export default function Navbar() {
               </Link>
             );
           })}
-        </nav>
 
-        <div className="mt-auto p-3 flex flex-col gap-2 border-t">
+          {/* Login */}
           <Link
             href="/login"
-            className="flex items-center gap-2 p-2 text-sm border border-blue-600 text-blue-600 rounded hover:bg-blue-50"
+            className="flex items-center gap-2 p-2 text-sm border border-blue-600 text-blue-600 rounded hover:bg-blue-50 mt-2"
             title={collapsed ? "Login" : ""}
           >
             <LogIn size={18} />
             {!collapsed && <span>Login</span>}
           </Link>
+
+          {/* Register */}
           <Link
             href="/register"
             className="flex items-center gap-2 p-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -121,8 +124,9 @@ export default function Navbar() {
             <UserPlus size={18} />
             {!collapsed && <span>Register</span>}
           </Link>
-        </div>
+        </nav>
 
+        {/* Font Size Control */}
         <div className="absolute bottom-5 right-5 bg-white rounded shadow text-sm hidden md:block">
           <div className="flex border">
             <button
@@ -147,15 +151,15 @@ export default function Navbar() {
         </div>
       </aside>
 
-      {/* Navbar mobile full layar tanpa overlay */}
+      {/* Sidebar Mobile */}
       {mobileOpen && (
-        <aside className="fixed top-0 left-0 h-screen w-full bg-white z-[10001] flex flex-col">
+        <div className="fixed top-0 left-0 h-screen w-full bg-white z-[10001] flex flex-col">
           <div className="flex items-center justify-between p-4 border-b">
             <span className="text-lg font-bold text-blue-700">
               Desa Digital
             </span>
             <button
-              onClick={() => setMobileOpen(false)}
+              onClick={toggleMobile}
               className="text-gray-500 hover:text-blue-600"
               aria-label="Close menu"
             >
@@ -170,7 +174,7 @@ export default function Navbar() {
                 <Link
                   key={href}
                   href={href}
-                  onClick={() => setMobileOpen(false)}
+                  onClick={toggleMobile}
                   className={clsx(
                     "flex items-center gap-3 p-2 rounded-md text-sm transition group",
                     isActive
@@ -183,27 +187,28 @@ export default function Navbar() {
                 </Link>
               );
             })}
-          </nav>
 
-          <div className="p-3 flex flex-col gap-2 border-t">
+            {/* Login */}
             <Link
               href="/login"
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 p-2 text-sm border border-blue-600 text-blue-600 rounded hover:bg-blue-50"
+              onClick={toggleMobile}
+              className="flex items-center gap-2 p-2 text-sm border border-blue-600 text-blue-600 rounded hover:bg-blue-50 mt-2"
             >
               <LogIn size={18} />
               <span>Login</span>
             </Link>
+
+            {/* Register */}
             <Link
               href="/register"
-              onClick={() => setMobileOpen(false)}
+              onClick={toggleMobile}
               className="flex items-center gap-2 p-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
             >
               <UserPlus size={18} />
               <span>Register</span>
             </Link>
-          </div>
-        </aside>
+          </nav>
+        </div>
       )}
     </>
   );

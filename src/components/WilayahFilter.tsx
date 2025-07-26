@@ -3,7 +3,6 @@ import { useWilayahStore } from "@/app/store/WilayahStore";
 
 const options = [
   "Semua",
-  "Kecamatan Stabat",
   "Desa Mangga",
   "Desa Banyumas",
   "Desa Kwala Begumit",

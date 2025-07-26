@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import clsx from "clsx";
+
 import { useReportStore } from "@/app/store/reportStore";
 import { reportData } from "../data/reports";
 import { villageLocations } from "@/app/data/villages";
@@ -21,13 +23,14 @@ export default function HomePage() {
   } | null>(null);
 
   const [selectedVillage, setSelectedVillage] = useState<string>("");
+  const [collapsed, setCollapsed] = useState(false);
 
-  // Load data ke store saat halaman pertama dibuka
+  // Load data dummy ke store saat halaman pertama dibuka
   useEffect(() => {
     setReports(reportData);
   }, [setReports]);
 
-  // Filter laporan berdasarkan kategori yang dipilih
+  // Filter laporan berdasarkan kategori
   const filteredReports = useMemo(() => {
     if (!selectedCategory || selectedCategory === "Semua") return reports;
     return reports.filter((r) =>
@@ -37,7 +40,7 @@ export default function HomePage() {
     );
   }, [reports, selectedCategory]);
 
-  // Scroll ke peta & flyTo marker laporan
+  // Klik gambar laporan
   const handleImageClick = (id: number) => {
     mapContainerRef.current?.scrollIntoView({ behavior: "smooth" });
     setTimeout(() => {
@@ -45,7 +48,7 @@ export default function HomePage() {
     }, 600);
   };
 
-  // Scroll ke peta & flyTo marker produk unggulan
+  // Klik dropdown wilayah
   const handleVillageSelect = (villageId: string) => {
     setSelectedVillage(villageId);
     mapContainerRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -56,18 +59,22 @@ export default function HomePage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
 
-      <main className="px-4 py-6 max-w-6xl mx-auto space-y-8">
+      <main
+        className={clsx(
+          "transition-all px-4 py-6",
+          collapsed ? "pl-20" : "pl-64"
+        )}
+      >
         {/* Filter Kategori dan Dropdown Wilayah */}
-        <div className="flex flex-wrap justify-between items-center gap-4">
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
           <CategoryFilter />
 
-          {/* Dropdown Produk Unggulan */}
           <select
             value={selectedVillage}
             onChange={(e) => handleVillageSelect(e.target.value)}
-            className="px-4 py-2 border rounded-md text-sm"
+            className="px-4 py-2 border rounded-md text-sm bg-white"
           >
             <option value="">Pilih Produk Unggulan Desa/Kelurahan</option>
             {villageLocations.map((village) => (
@@ -78,8 +85,8 @@ export default function HomePage() {
           </select>
         </div>
 
-        {/* Galeri */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* Galeri Laporan */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
           {filteredReports.map((r) => (
             <div
               key={r.id}
@@ -90,10 +97,10 @@ export default function HomePage() {
                 <img
                   src={r.imageUrl}
                   alt={r.description}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   onError={(e) =>
                     (e.currentTarget.src = "/images/fallback.jpg")
                   }
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div className="p-3 space-y-1">
@@ -119,7 +126,7 @@ export default function HomePage() {
         <div ref={mapContainerRef}>
           <MapWrapper
             reports={filteredReports}
-            selectedVillageId={selectedVillage} // ⬅️ PENTING: kirim selectedVillage ke MapWrapper
+            selectedVillageId={selectedVillage}
             onReady={(actions) => {
               mapActionsRef.current = actions;
             }}
