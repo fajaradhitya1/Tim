@@ -236,7 +236,7 @@ export default function SmartCityPage() {
           <div className="row mt-4 align-items-center mb-10">
             <div className="col-md-4">
               <Image
-                src="/images/SD_Manusia/SD_Manusia_Poster.png"
+                src="/images/SD_Manusia/SD_Manusia_poster.png"
                 width={500}
                 height={400}
                 alt="SD_Manusia"
