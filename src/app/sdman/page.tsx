@@ -239,7 +239,7 @@ export default function SmartCityPage() {
                 src="/images/SD_Manusia/SD_Manusia_Poster.png"
                 width={500}
                 height={400}
-                alt="SD Masyarakat"
+                alt="SD_Manusia"
                 className="img-fluid"
               />
             </div>
