@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { villageLocations } from "../../data/villages";
+
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -248,7 +250,7 @@ export default function DashboardPage() {
       <div className="row mt-4 align-items-center">
         <div className="col-md-4">
           <Image
-            src="/images/SD_Manusia/SD_Manusia_Poster.png"
+            src="/images/sdmas/poster_sdm1.png"
             width={500}
             height={400}
             alt="SD Masyarakat"
@@ -282,12 +284,12 @@ export default function DashboardPage() {
             </p>
 
             <div>
-              <Link
-                href="/produkditawarkan"
+              <button
                 className="btn btn-success rounded-pill px-4 py-2 shadow-sm"
+                onClick={() => openModal("Lainnya")}
               >
                 🌱 Lebih Lanjut
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -316,7 +318,7 @@ export default function DashboardPage() {
             {
               title: "Nasi Berlebih Rewang",
               desc: "🍱 Makanan sisa hajatan sering terbuang. Tawarkan secara gratis untuk yang membutuhkan. Berbagi itu berkah!",
-              image: "/images/sdmas/rewang 2.PNG",
+              image: "/images/sdmas/rewang.PNG",
               value: "Makanan Pesta Bersisa",
             },
           ].map((item, i) => (
@@ -398,7 +400,7 @@ export default function DashboardPage() {
           aria-labelledby="modalTawarkanLabel"
           aria-hidden="true"
         >
-          <div className="modal-dialog modal-lg">
+          <div className="modal-dialog modal-dialog-centered modal-lg">
             <div className="modal-content">
               <form id="formTawaran" onSubmit={handleSubmit}>
                 <div className="modal-header">
@@ -409,7 +411,12 @@ export default function DashboardPage() {
                     data-bs-dismiss="modal"
                   ></button>
                 </div>
-                <div className="modal-body">
+
+                {/* Tambahkan max-height dan scroll */}
+                <div
+                  className="modal-body"
+                  style={{ maxHeight: "70vh", overflowY: "auto" }}
+                >
                   <div className="mb-3">
                     <label className="form-label">Nama</label>
                     <input
@@ -419,6 +426,7 @@ export default function DashboardPage() {
                       required
                     />
                   </div>
+
                   <div className="mb-3">
                     <label className="form-label">No Telepon</label>
                     <input
@@ -428,6 +436,7 @@ export default function DashboardPage() {
                       required
                     />
                   </div>
+
                   <div className="mb-3">
                     <label className="form-label">Jenis Produk</label>
                     <select
@@ -446,6 +455,7 @@ export default function DashboardPage() {
                       <option value="Lainnya">Lainnya</option>
                     </select>
                   </div>
+
                   <div
                     id="lainnyaInputGroup"
                     className="mb-3"
@@ -472,15 +482,19 @@ export default function DashboardPage() {
                       className="form-control"
                     />
                   </div>
+
                   <div className="mb-3">
                     <label className="form-label">Kelurahan</label>
                     <select name="kelurahan" className="form-select" required>
-                      <option value="">-- Pilih Kelurahan --</option>
-                      <option value="Stabat Baru">Stabat Baru</option>
-                      <option value="Dendang">Dendang</option>
-                      <option value="Karang Rejo">Karang Rejo</option>
+                      <option value="">-- Pilih Kelurahan/Desa --</option>
+                      {villageLocations.map((village) => (
+                        <option key={village.id} value={village.wilayah}>
+                          {village.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
+
                   <div className="mb-3">
                     <label className="form-label">Alamat</label>
                     <textarea
@@ -490,6 +504,7 @@ export default function DashboardPage() {
                       required
                     ></textarea>
                   </div>
+
                   <div className="mb-3">
                     <label className="form-label">Jenis Penawaran</label>
                     <select name="jenis" className="form-select" required>
@@ -498,6 +513,7 @@ export default function DashboardPage() {
                       <option value="berbayar">Berbayar</option>
                     </select>
                   </div>
+
                   <div className="mb-3">
                     <label className="form-label">Keterangan</label>
                     <textarea
@@ -508,6 +524,7 @@ export default function DashboardPage() {
                     ></textarea>
                   </div>
                 </div>
+
                 <div className="modal-footer">
                   <button className="btn btn-success" type="submit">
                     Kirim

@@ -22,10 +22,8 @@ export default function WilayahFilter() {
 
   return (
     <select
-      value={selectedWilayah || ""}
-      onChange={(e) =>
-        setSelectedWilayah(e.target.value === "Semua" ? null : e.target.value)
-      }
+      value={selectedWilayah}
+      onChange={(e) => setSelectedWilayah(e.target.value)}
       className="p-2 border rounded"
     >
       {options.map((wilayah) => (

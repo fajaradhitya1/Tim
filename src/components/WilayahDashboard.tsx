@@ -1,6 +1,7 @@
 "use client";
 
-import { useWilayahStore } from "@/app/store/WilayahStore"; 
+import { useWilayahStore } from "../app/store/WilayahStore";
+
 
 
 const options = ["Semua", "Desa", "Kelurahan"];

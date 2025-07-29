@@ -314,8 +314,6 @@ export default function ProdukUnggulanPage() {
                   </div>
 
                   <div className="space-y-2">
-                    
-
                     {!enableGeo && (
                       <>
                         <div>
@@ -419,6 +417,14 @@ export default function ProdukUnggulanPage() {
           </div>
         )}
       </main>
+      <footer className="footer mt-5 py-3 bg-light border-top">
+        <div className="container text-center">
+          <span className="text-muted">
+            &copy; {new Date().getFullYear()} Kerjasama Kecamatan Stabat -
+            Universitas Satya Terra Bhinneka
+          </span>
+        </div>
+      </footer>
     </>
   );
 }

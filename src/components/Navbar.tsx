@@ -52,7 +52,8 @@ export default function Navbar({
       {/* Tombol Logo Mobile */}
       <button
         onClick={toggleMobile}
-        className="fixed top-4 left-4 z-[10001] block md:hidden bg-blue-700 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg"
+        className="fixed top-4 left-4 z-50 bg-blue-700 text-white px-5 py-2 shadow-md font-semibold text-sm flex items-center justify-center block md:hidden"
+        style={{ borderRadius: "9999px" }}
         aria-label="Toggle menu"
       >
         Menu

@@ -107,6 +107,6 @@ export const villageLocations = [
     lat: 3.755133,
     lng: 98.509148,
     description: "Produk Unggulan: Gula Aren",
-    imageUrl: "/images/gulAren.jpg",
+    imageUrl: "/images/gulaaren.jpg",
   },
 ];

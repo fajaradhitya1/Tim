@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `Umkm` ADD COLUMN `jalan` VARCHAR(191) NULL;

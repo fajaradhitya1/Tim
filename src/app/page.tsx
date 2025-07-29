@@ -151,13 +151,13 @@ export default function HomePage() {
                 caption: "Sinergi masyarakat dan pemerintahan",
               },
               {
-                img: "/images/informasi.jpg",
+                img: "/images/grid.png",
                 caption: "Produk Unggulan UMKM Setiap Daerah",
               },
             ].map((item, i) => (
               <div
                 key={i}
-                className="relative rounded-xl overflow-hidden shadow-lg group"       
+                className="relative rounded-xl overflow-hidden shadow-lg group"
                 style={{ maxHeight: 400 }}
               >
                 <Image
@@ -204,7 +204,7 @@ export default function HomePage() {
                   <h2 className="text-xl font-semibold mb-2 text-green-700">
                     {card.title}
                   </h2>
-                  <p className="text-gray-600 text-sm">{card.description}</p>
+                  <p className="text-black-600 text-sm">{card.description}</p>
                 </div>
                 <button
                   onClick={() => router.push(card.link)}
@@ -219,7 +219,7 @@ export default function HomePage() {
 
         {/* Keunggulan */}
         <section className="text-center mb-16">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          <h2 className="text-2xl font-bold text-gray-600 mb-4">
             Mengapa Menggunakan Platform Ini?
           </h2>
           <div className="grid md:grid-cols-3 gap-8 text-sm text-gray-600">
@@ -237,7 +237,7 @@ export default function HomePage() {
 
         {/* CTA */}
         <section className="text-center bg-green-50 rounded-xl py-10 px-6">
-          <h2 className="text-2xl font-bold text-green-700 mb-2">
+          <h2 className="text-2xl font-bold text-black mb-2">
             Bergabung dan Berkontribusi untuk Stabat!
           </h2>
           <p className="text-gray-600 mb-4">
@@ -253,9 +253,13 @@ export default function HomePage() {
         </section>
 
         {/* Footer */}
-        <footer className="mt-20 pt-8 border-t text-center text-gray-500 text-sm">
-          © {new Date().getFullYear()} Kecamatan Stabat - SmartCity. All rights
-          reserved.
+        <footer className="footer mt-5 py-3 bg-light border-top">
+          <div className="container text-center">
+            <span className="text-muted">
+              &copy; {new Date().getFullYear()} Kerjasama Kecamatan Stabat -
+              Universitas Satya Terra Bhinneka
+            </span>
+          </div>
         </footer>
       </main>
     </div>

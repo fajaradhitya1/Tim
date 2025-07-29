@@ -19,7 +19,7 @@ import Navbar from "@/components/Navbar";
 import { villageLocations } from "@/app/data/villages";
 import CarouselSection from "@/components/Carousel";
 import clsx from "clsx";
-
+import SmartCityPage from "../sdman/page";
 // ✅ Ganti nama import agar tidak konflik
 import DashboardSDMAS from "../sdmas/dashboard/page";
 
@@ -66,6 +66,9 @@ export default function DashboardPage() {
         {/* SECTION: SDM Dashboard */}
         <section className="container p-1">
           <DashboardSDMAS />
+        </section>
+        <section>
+          <SmartCityPage/>
         </section>
 
         {/* SECTION: Dashboard Utama */}
@@ -198,6 +201,14 @@ export default function DashboardPage() {
 
         {/* SECTION: Carousel */}
         <CarouselSection />
+        <footer className="footer mt-5 py-3 bg-light border-top">
+          <div className="container text-center">
+            <span className="text-muted">
+              &copy; {new Date().getFullYear()} Kerjasama Kecamatan Stabat -
+              Universitas Satya Terra Bhinneka
+            </span>
+          </div>
+        </footer>
       </main>
     </>
   );

@@ -10,7 +10,7 @@ const umkmItems = [
     id: 1,
     title: "Desa Mangga",
     product: "Pembuatan Gula Aren",
-    image: "/images/gulAren.jpg",
+    image: "/images/gulaaren.jpg",
   },
   {
     id: 2,
@@ -64,7 +64,7 @@ const umkmItems = [
     id: 10,
     title: "Kelurahan Paya Mabar",
     product: "Pembuatan Susu Kedelai",
-    image: "/images/umkm/susu.jpg",
+    image: "/images/susu.jpg",
   },
   {
     id: 11,

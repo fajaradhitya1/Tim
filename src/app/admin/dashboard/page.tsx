@@ -16,6 +16,7 @@ import Navbar from "../../../components/Navbar";
 import clsx from "clsx";
 import { villageLocations } from "@/app/data/villages";
 import { div } from "framer-motion/client";
+import Monitoring from "@/app/monitoring/page";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -219,9 +220,9 @@ export default function AdminDashboard() {
                     className="p-2 border rounded-md"
                   >
                     <option value="Semua">Semua Wilayah</option>
-                    {villageLocations.map((v) => (
-                      <option key={v.wilayah} value={v.wilayah}>
-                        {v.wilayah}
+                    {wilayahList.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
                       </option>
                     ))}
                   </select>
@@ -383,7 +384,18 @@ export default function AdminDashboard() {
               )}
             </div>
           </section>
+          <div>
+            <Monitoring/>
+          </div>
         </main>
+        <footer className="footer mt-5 py-3 bg-light border-top">
+          <div className="container text-center">
+            <span className="text-muted">
+              &copy; {new Date().getFullYear()} Kerjasama Kecamatan Stabat -
+              Universitas Satya Terra Bhinneka
+            </span>
+          </div>
+        </footer>
       </div>
     </>
   );
