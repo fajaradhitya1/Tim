@@ -103,7 +103,7 @@ const UMKMCarousel = () => {
   };
 
   return (
-    <section className="max-w-5xl mx-auto px-4 py-12">
+    <section className="w-full text-black max-w-4xl mx-auto px-4 py-6 sm:py-10 md:py-12">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
         Produk Unggulan UMKM Kecamatan Stabat
       </h2>

@@ -116,8 +116,8 @@ export default function Monitoring() {
         className="grid-container position-relative"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4, 120px)",
-          gridTemplateRows: "repeat(4, 120px)",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateRows: "repeat(4, 100px)",
           gap: "20px",
           justifyContent: "center",
           alignItems: "center",
@@ -150,10 +150,9 @@ export default function Monitoring() {
                   style={{
                     gridColumn: "2 / span 2",
                     gridRow: "2 / span 2",
-                    width: 240,
-                    height: 240,
+                    aspectRatio: "1 / 1",
                     backgroundColor: "#14532d",
-                    borderRadius: 12,
+                    borderRadius: "12px",
                     outline: "4px solid white",
                     display: "flex",
                     alignItems: "center",
@@ -187,8 +186,7 @@ export default function Monitoring() {
                 if (el) kotakRefs.current.push(el);
               }}
               style={{
-                width: 100,
-                height: 100,
+                aspectRatio: "1 / 1",
                 backgroundColor: hasData ? "#0d6efd" : "#ccc",
                 opacity: hasData ? 1 : 0.5,
                 borderRadius: 10,
@@ -247,7 +245,12 @@ export default function Monitoring() {
         <Modal.Header closeButton>
           <Modal.Title>{selectedKelurahan}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body
+          style={{
+            maxHeight: "60vh",
+            overflowY: "auto",
+          }}
+        >
           {kategoriList.length > 0 ? (
             <div className="table-responsive">
               <table className="table table-bordered table-striped">

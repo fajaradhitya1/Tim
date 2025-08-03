@@ -21,7 +21,6 @@ const navItems = [
   { label: "Beranda", href: "/", icon: Home },
   { label: "Peta", href: "/peta", icon: MapPin },
   { label: "Produk Unggulan", href: "/produk-unggulan", icon: Package },
-  // Login & Register akan ditampilkan secara terpisah di bawah
 ];
 
 export default function Navbar({

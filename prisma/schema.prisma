@@ -72,3 +72,21 @@ model Daerah {
   lat       String  @default("")
   long      String  @default("")
 }
+
+
+model PenangkapanIkan {
+  id          String   @id @default(cuid())
+  nama        String
+  hp          String
+  kelurahan   String
+  alamat      String
+  jenisIkan   String
+  hargaPerKg  Float
+  stokKg      Float
+  catatan     String?
+  deskripsi   String?
+  lokasi      String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+}
+

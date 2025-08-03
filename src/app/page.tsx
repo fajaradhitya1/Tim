@@ -83,7 +83,7 @@ export default function HomePage() {
         </section>
 
         {/* Smart City */}
-        <section className="mb-16 max-w-6xl mx-auto px-4">
+        <section className="mb-16 max-w-6xl text-black mx-auto px-4">
           <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
             Mengenal Kecamatan Stabat
           </h2>
@@ -186,11 +186,11 @@ export default function HomePage() {
         </section>
 
         {/* Card Section */}
-        <section className="grid gap-8 md:grid-cols-3 mb-16">
+        <section className="grid gap-8 md:grid-cols-3 mb-16 text-black">
           {cards.map((card, i) => (
             <div
               key={i}
-              className="bg-white rounded-xl shadow-md hover:shadow-xl transition overflow-hidden flex flex-col"
+              className="bg-white text-black rounded-xl shadow-md hover:shadow-xl transition overflow-hidden flex flex-col"
             >
               <Image
                 src={card.image}
@@ -218,11 +218,11 @@ export default function HomePage() {
         </section>
 
         {/* Keunggulan */}
-        <section className="text-center mb-16">
-          <h2 className="text-2xl font-bold text-gray-600 mb-4">
+        <section className="text-center text-black mb-16">
+          <h2 className="text-2xl font-bold text-black-600 mb-4">
             Mengapa Menggunakan Platform Ini?
           </h2>
-          <div className="grid md:grid-cols-3 gap-8 text-sm text-gray-600">
+          <div className="grid md:grid-cols-3 gap-8 text-sm text-black-600">
             <div className="p-4 bg-white rounded-lg shadow-sm">
               ✅ Akses data desa dan kelurahan secara real-time.
             </div>

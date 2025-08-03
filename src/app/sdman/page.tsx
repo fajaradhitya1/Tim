@@ -296,7 +296,7 @@ export default function SmartCityPage() {
               border: "3px solid #198754",
               width: "100%",
               margin: "auto",
-              touchAction: "pan-y", // supaya bisa swipe vertikal
+              touchAction: "pan-y",
             }}
           >
             <div className="carousel-indicators">
@@ -317,7 +317,6 @@ export default function SmartCityPage() {
               ref={carouselInnerRef}
               className="carousel-inner"
               style={{
-                height: 350,
                 overflow: "hidden",
                 cursor: isDragging ? "grabbing" : "grab",
               }}
@@ -333,15 +332,30 @@ export default function SmartCityPage() {
                 <div
                   key={img}
                   className={`carousel-item ${i === 0 ? "active" : ""}`}
-                  style={{ height: "100%" }}
                 >
                   <img
                     src={`/images/SD_Manusia/${img}.png`}
-                    className="d-block w-100"
                     alt={img}
+                    className="d-block w-100 d-none d-md-block"
                     style={{
                       height: "350px",
                       objectFit: "cover",
+                      objectPosition: "center center",
+                      userSelect: "none",
+                      pointerEvents: "none",
+                    }}
+                    draggable={false}
+                  />
+
+                  <img
+                    src={`/images/SD_Manusia/${img}.png`}
+                    alt={img}
+                    className="d-block w-100 d-block d-md-none"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      aspectRatio: "3/2",
+                      objectFit: "contain", // ubah dari "cover" → "contain"
                       userSelect: "none",
                       pointerEvents: "none",
                     }}

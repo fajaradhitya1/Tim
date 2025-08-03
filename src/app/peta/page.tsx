@@ -63,12 +63,13 @@ export default function HomePage() {
 
       <main
         className={clsx(
-          "transition-all px-4 py-6",
-          collapsed ? "pl-20" : "pl-64"
+          "transition-all",
+          collapsed ? "md:pl-20" : "md:pl-64", // hanya aktif di md ke atas
+          "pl-0"
         )}
       >
         {/* Filter Kategori dan Dropdown Wilayah */}
-        <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-6 ml-10">
           <CategoryFilter />
 
           <select
@@ -86,7 +87,7 @@ export default function HomePage() {
         </div>
 
         {/* Galeri Laporan */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10 ml-10">
           {filteredReports.map((r) => (
             <div
               key={r.id}
@@ -123,7 +124,7 @@ export default function HomePage() {
         </div>
 
         {/* Peta */}
-        <div ref={mapContainerRef}>
+        <div ref={mapContainerRef} className="ml-10">
           <MapWrapper
             reports={filteredReports}
             selectedVillageId={selectedVillage}
@@ -132,6 +133,15 @@ export default function HomePage() {
             }}
           />
         </div>
+
+        <footer className="footer mt-5 py-3 bg-light border-top">
+          <div className="container text-center"> 
+            <span className="text-muted">
+              &copy; {new Date().getFullYear()} Kerjasama Kecamatan Stabat -
+              Universitas Satya Terra Bhinneka
+            </span>
+          </div>
+        </footer>
       </main>
     </>
   );

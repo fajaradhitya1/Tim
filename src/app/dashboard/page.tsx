@@ -20,22 +20,18 @@ import { villageLocations } from "@/app/data/villages";
 import CarouselSection from "@/components/Carousel";
 import clsx from "clsx";
 import SmartCityPage from "../sdman/page";
-// ✅ Ganti nama import agar tidak konflik
 import DashboardSDMAS from "../sdmas/dashboard/page";
+import JualIkanPage from "@/components/jualikan";
 
-// Dynamic import (client only)
 const WilayahMapCard = dynamic(() => import("@/components/WilayahMapCard"), {
   ssr: false,
 });
-
 const MapWilayah = dynamic(() => import("@/components/MapWilayah"), {
   ssr: false,
 });
 
-// Chart colors
 const COLORS = ["#00C49F", "#FFBB28", "#FF8042", "#0088FE"];
 
-// Dummy data
 const pendidikanData = [
   { name: "PAUD", value: 30 },
   { name: "SD", value: 42 },
@@ -59,27 +55,34 @@ export default function DashboardPage() {
       <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
       <main
         className={clsx(
-          "transition-all duration-300 px-4 sm:px-6", // efek halus saat geser
+          "transition-all duration-300 px-4 sm:px-6 lg:px-8",
           collapsed ? "md:ml-20" : "md:ml-64"
         )}
       >
         {/* SECTION: SDM Dashboard */}
-        <section className="container p-1">
+        <section className="w-full container p-1">
           <DashboardSDMAS />
         </section>
+
+        {/* SECTION: SmartCity */}
+        <section className="w-full">
+          <SmartCityPage />
+        </section>
         <section>
-          <SmartCityPage/>
+          <JualIkanPage />
         </section>
 
         {/* SECTION: Dashboard Utama */}
-        <section className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-200 py-10 px-4">
-          <div className="max-w-7xl mx-auto">
+        <section className="w-full text-black bg-gradient-to-br from-blue-100 via-white to-blue-200 py-5">
+          <div className="w-full max-w-7xl mx-auto">
             <h1 className="text-3xl md:text-4xl font-bold text-blue-800 mb-10 text-center">
               📍 Dashboard Kecamatan Stabat
             </h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-5 rounded-xl border border-blue-100 shadow hover:shadow-md transition">
-              <WilayahMapCard />
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-5 rounded-xl border border-blue-100 shadow hover:shadow-md transition">
+              <div className="w-full">
+                <WilayahMapCard />
+              </div>
 
               <InfoCard icon={<Landmark />} title="Wilayah Batas">
                 <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
@@ -98,15 +101,11 @@ export default function DashboardPage() {
                       cx="50%"
                       cy="50%"
                       outerRadius={80}
-                      fill="#8884d8"
                       dataKey="value"
                       label
                     >
-                      {pendidikanData.map((_, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
+                      {pendidikanData.map((_, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -143,20 +142,20 @@ export default function DashboardPage() {
               </InfoCard>
 
               <InfoCard icon={<Leaf />} title="Produk Unggulan">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-gray-700 bg-green-50 px-2 py-1 rounded-md border border-green-200 text-xs text-green-800">
-                  {villageLocations.map((village) => (
+                <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-2 px-2 py-1 bg-green-50 rounded-md border border-green-200 text-sm text-green-800">
+                  {villageLocations.map((v) => (
                     <ProductItem
-                      key={village.id}
-                      name={village.name}
-                      value={village.description.replace("UMKM: ", "")}
+                      key={v.id}
+                      name={v.name}
+                      value={v.description.replace("UMKM: ", "")}
                     />
                   ))}
                 </div>
               </InfoCard>
 
-              <div className="col-span-1 md:col-span-2">
+              <div className="col-span-1 md:col-span-2 w-full">
                 <InfoCard icon={<MapPin />} title="🗺️ Peta Kecamatan">
-                  <div className="h-[400px] rounded-lg overflow-hidden shadow-inner">
+                  <div className="w-full h-[400px] rounded-lg overflow-hidden shadow-inner">
                     <MapWilayah reports={villageLocations} mapRef={mapRef} />
                   </div>
                 </InfoCard>
@@ -166,55 +165,60 @@ export default function DashboardPage() {
         </section>
 
         {/* SECTION: Visi Misi */}
-        <section className="max-w-6xl mx-auto px-4 py-12 space-y-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center">
-            Arah Pembangunan Desa
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white shadow-md rounded-xl p-6 border hover:shadow-xl hover:border-blue-500 transition-all duration-300">
-              <h3 className="text-xl font-semibold text-red-600 mb-3">Visi</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Terwujudnya Desa yang Mandiri, Sejahtera, dan Berdaya Saing
-                melalui pembangunan yang partisipatif dan berkelanjutan.
-              </p>
+        <section className="w-full max-w-7xl mx-auto py-10">
+          <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center">
+              Arah Pembangunan Desa
+            </h2>
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="w-full bg-white shadow-md rounded-xl p-6 border hover:shadow-xl hover:border-blue-500 transition-all duration-300">
+                <h3 className="text-xl font-semibold text-red-600 mb-3">
+                  Visi
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Terwujudnya Desa yang Mandiri, Sejahtera, dan Berdaya Saing
+                  melalui pembangunan yang partisipatif dan berkelanjutan.
+                </p>
+              </div>
+              <div className="w-full bg-white shadow-md rounded-xl p-6 border hover:shadow-xl hover:border-blue-500 transition-all duration-300">
+                <h3 className="text-xl font-semibold text-black-600 mb-3">
+                  Misi
+                </h3>
+                <ul className="list-disc pl-5 text-gray-700 space-y-2">
+                  <li>Meningkatkan kualitas sumber daya manusia desa.</li>
+                  <li>
+                    Mendorong pertumbuhan ekonomi melalui UMKM dan pertanian.
+                  </li>
+                  <li>
+                    Meningkatkan infrastruktur dasar desa secara berkelanjutan.
+                  </li>
+                  <li>
+                    Mewujudkan tata kelola pemerintahan desa yang transparan dan
+                    akuntabel.
+                  </li>
+                </ul>
+              </div>
             </div>
-
-            <div className="bg-white shadow-md rounded-xl p-6 border hover:shadow-xl hover:border-blue-500 transition-all duration-300">
-              <h3 className="text-xl font-semibold text-red-600 mb-3">Misi</h3>
-              <ul className="list-disc pl-5 text-gray-700 space-y-2">
-                <li>Meningkatkan kualitas sumber daya manusia desa.</li>
-                <li>
-                  Mendorong pertumbuhan ekonomi melalui UMKM dan pertanian.
-                </li>
-                <li>
-                  Meningkatkan infrastruktur dasar desa secara berkelanjutan.
-                </li>
-                <li>
-                  Mewujudkan tata kelola pemerintahan desa yang transparan dan
-                  akuntabel.
-                </li>
-              </ul>
-            </div>
-          </div>
+          </section>
         </section>
 
         {/* SECTION: Carousel */}
-        <CarouselSection />
-        <footer className="footer mt-5 py-3 bg-light border-top">
-          <div className="container text-center">
-            <span className="text-muted">
-              &copy; {new Date().getFullYear()} Kerjasama Kecamatan Stabat -
-              Universitas Satya Terra Bhinneka
-            </span>
-          </div>
+        <section className="w-full max-w-7xl mx-auto py-10">
+          <CarouselSection />
+        </section>
+
+        {/* Footer */}
+        <footer className="w-full mt-5 py-4 border-t bg-white text-center text-sm text-gray-600">
+          <span>
+            &copy; {new Date().getFullYear()} Kerjasama Kecamatan Stabat -
+            Universitas Satya Terra Bhinneka
+          </span>
         </footer>
       </main>
     </>
   );
 }
 
-// Komponen Card
 function InfoCard({
   title,
   icon,
@@ -225,7 +229,7 @@ function InfoCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-green-50 px-2 py-1 rounded-md border border-green-200 text-xs text-green-800">
+    <div className="w-full bg-green-50 px-4 py-3 rounded-md border border-green-200 text-xs text-green-800">
       <div className="flex items-center gap-2 mb-3 text-blue-800 font-semibold">
         {icon}
         <h2 className="text-lg">{title}</h2>
@@ -235,10 +239,9 @@ function InfoCard({
   );
 }
 
-// Komponen Item UMKM
 function ProductItem({ name, value }: { name: string; value: string }) {
   return (
-    <div className="bg-green-50 px-2 py-1 rounded-md border border-green-200 text-xs text-green-800">
+    <div className="w-full bg-green-50 px-2 py-1 rounded-md border border-green-200 text-sm text-green-800">
       <strong>{name}:</strong> {value}
     </div>
   );

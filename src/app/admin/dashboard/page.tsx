@@ -32,11 +32,21 @@ export default function AdminDashboard() {
   const wilayahList = villageLocations.map((v) => v.wilayah);
 
   useEffect(() => {
-    const isAdmin = true;
-    if (!isAdmin) {
-      router.push("/login");
-    }
+    const checkSession = async () => {
+      try {
+        const res = await fetch("/api/auth/session");
+        if (!res.ok) throw new Error("Unauthorized");
+        const data = await res.json();
+        if (data.role !== "ADMIN") {
+          router.push("/login");
+        }
+      } catch {
+        router.push("/login");
+      }
+    };
+    checkSession();
   }, [router]);
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -138,6 +148,19 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleLogout = async () => {
+    const confirmLogout = window.confirm("Yakin ingin logout?");
+    if (!confirmLogout) return;
+
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout gagal:", error);
+      alert("Terjadi kesalahan saat logout.");
+    }
+  };
+
   const handleVerifikasi = async (id: number, status: string) => {
     try {
       const res = await fetch(`/api/auth/umkm/verifikasi/${id}`, {
@@ -162,15 +185,25 @@ export default function AdminDashboard() {
         <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
         <main
           className={clsx(
-            "transition-all duration-300 px-6 sm:px-10 pt-16",
+            "transition-all duration-300 px-6 sm:px-10 pt-10",
             collapsed ? "md:ml-20" : "md:ml-64"
           )}
         >
-          <header className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-800">
-              Dashboard Admin
-            </h1>
-            <p className="text-gray-500 mt-1">Selamat datang di panel admin</p>
+          <header className="mb-8 flex items-start justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-800">
+                Dashboard Admin
+              </h1>
+              <p className="text-gray-500 mt-1">
+                Selamat datang di panel admin
+              </p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-md transition"
+            >
+              Logout
+            </button>
           </header>
 
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -299,94 +332,98 @@ export default function AdminDashboard() {
               ) : umkmData.length === 0 ? (
                 <p>Tidak ada data UMKM.</p>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full table-auto text-left border">
-                    <thead>
-                      <tr className="bg-gray-200">
-                        <th className="p-2 border">No</th>
-                        <th className="p-2 border">Nama</th>
-                        <th className="p-2 border">Wilayah</th>
-                        <th className="p-2 border">Deskripsi</th>
-                        <th className="p-2 border">Gambar</th>
-                        <th className="p-2 border">Status</th>
-                        <th className="p-2 border">Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {umkmData.map((item, i) => (
-                        <tr key={item.id}>
-                          <td className="p-2 border">{i + 1}</td>
-                          <td className="p-2 border whitespace-nowrap">
-                            {item.nama}
-                          </td>
-                          <td className="p-2 border whitespace-nowrap">
-                            {item.wilayah}
-                          </td>
-                          <td className="p-2 border max-w-[200px] break-words text-sm">
-                            {item.deskripsi}
-                          </td>
-                          <td className="p-2 border">
-                            <img
-                              src={item.imageUrl}
-                              alt={item.nama}
-                              className="w-16 h-16 object-cover rounded"
-                            />
-                          </td>
-                          <td className="p-2 border">
-                            <span
-                              className={clsx(
-                                "px-2 py-1 text-sm rounded",
-                                item.status === "Disetujui" &&
-                                  "bg-green-100 text-green-700",
-                                item.status === "Ditolak" &&
-                                  "bg-red-100 text-red-700",
-                                item.status === "Menunggu" &&
-                                  "bg-yellow-100 text-yellow-800"
-                              )}
-                            >
-                              {item.status}
-                            </span>
-                          </td>
-                          <td className="p-2 border space-x-2 whitespace-nowrap">
-                            {item.status === "Menunggu" ? (
-                              <>
-                                <button
-                                  onClick={() =>
-                                    handleVerifikasi(item.id, "Disetujui")
-                                  }
-                                  className="text-green-600 hover:underline"
-                                >
-                                  Setujui
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleVerifikasi(item.id, "Ditolak")
-                                  }
-                                  className="text-red-600 hover:underline"
-                                >
-                                  Tolak
-                                </button>
-                              </>
-                            ) : (
+                <table className="min-w-full table-auto text-left border">
+                  <thead className="sticky top-0 bg-gray-200 z-10">
+                    <tr>
+                      <th className="p-2 border">No</th>
+                      <th className="p-2 border">Nama</th>
+                      <th className="p-2 border">Wilayah</th>
+                      <th className="p-2 border">Deskripsi</th>
+                      <th className="p-2 border">Gambar</th>
+                      <th className="p-2 border">Status</th>
+                      <th className="p-2 border">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {umkmData.map((item, i) => (
+                      <tr key={item.id}>
+                        <td className="p-2 border">{i + 1}</td>
+                        <td className="p-2 border whitespace-nowrap">
+                          {item.nama}
+                        </td>
+                        <td className="p-2 border whitespace-nowrap">
+                          {item.wilayah}
+                        </td>
+                        <td className="p-2 border max-w-[200px] break-words text-sm">
+                          {item.deskripsi}
+                        </td>
+                        <td className="p-2 border">
+                          <img
+                            src={item.imageUrl}
+                            alt={item.nama}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        </td>
+                        <td className="p-2 border">
+                          <span
+                            className={clsx(
+                              "px-2 py-1 text-sm rounded",
+                              item.status === "Disetujui" &&
+                                "bg-green-100 text-green-700",
+                              item.status === "Ditolak" &&
+                                "bg-red-100 text-red-700",
+                              item.status === "Menunggu" &&
+                                "bg-yellow-100 text-yellow-800"
+                            )}
+                          >
+                            {item.status}
+                          </span>
+                        </td>
+                        <td className="p-2 border space-x-2 whitespace-nowrap">
+                          {item.status === "Menunggu" ? (
+                            <>
                               <button
-                                onClick={() => handleDelete(item.id)}
+                                onClick={() =>
+                                  handleVerifikasi(item.id, "Disetujui")
+                                }
+                                className="text-green-600 hover:underline"
+                              >
+                                Setujui
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleVerifikasi(item.id, "Ditolak")
+                                }
                                 className="text-red-600 hover:underline"
                               >
-                                Hapus
+                                Tolak
                               </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => handleDelete(item.id)}
+                              className="text-red-600 hover:underline"
+                            >
+                              Hapus
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
             </div>
           </section>
-          <div>
-            <Monitoring/>
-          </div>
+
+          <section className="mt-12">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Monitoring
+            </h2>
+            <div className="bg-white rounded-xl shadow p-6 w-full overflow-x-auto">
+              <Monitoring />
+            </div>
+          </section>
         </main>
         <footer className="footer mt-5 py-3 bg-light border-top">
           <div className="container text-center">
@@ -418,6 +455,7 @@ function DashboardCard({
       <p className={`text-2xl font-bold ${isText ? "text-lg" : ""} ${color}`}>
         {value}
       </p>
+      
     </div>
   );
 }

@@ -22,10 +22,13 @@ interface Village {
 interface MapWilayahProps {
   reports: Village[];
   mapRef?: React.MutableRefObject<{
-    flyToMarker: (id: number) => void;
+    flyToMarker: (key: string) => void;
     fitBounds: (bounds: L.LatLngBoundsExpression) => void;
+    markerRefs?: Record<string, L.Marker>;
   } | null>;
 }
+
+
 
 // ✅ Marker dengan gambar berbentuk lingkaran
 const getVillageIcon = (imageUrl: string): L.DivIcon => {
@@ -89,7 +92,7 @@ function offsetMarkers(locations: Village[]) {
 
 const MapWilayah: React.FC<MapWilayahProps> = ({ reports, mapRef }) => {
   const internalRef = useRef<L.Map | null>(null);
-  const markerRefs = useRef<Record<number, L.Marker>>(Object.create(null));
+ const markerRefs = useRef<Record<string, L.Marker>>(Object.create(null));
 
   const adjustedReports = offsetMarkers(reports);
 
@@ -102,17 +105,29 @@ const MapWilayah: React.FC<MapWilayahProps> = ({ reports, mapRef }) => {
     if (!map) return;
 
     if (mapRef) {
-      mapRef.current = {
-        fitBounds: (bounds) => map.fitBounds(bounds),
-        flyToMarker: (id) => {
-          const marker = markerRefs.current[id];
-          if (marker) {
-            const latlng = marker.getLatLng();
-            map.flyTo(latlng, 16, { duration: 1 });
-            marker.openPopup();
-          }
-        },
-      };
+     mapRef.current = {
+       fitBounds: (bounds) => map.fitBounds(bounds),
+       flyToMarker: (key: string) => {
+         const marker = markerRefs.current[key];
+         console.log("🔍 markerKey dicari:", key);
+         console.log(
+           "📌 markerRefs tersedia:",
+           Object.keys(markerRefs.current)
+         );
+         if (marker) {
+           const latlng = marker.getLatLng();
+           map.flyTo(latlng, 16, { duration: 1 });
+           setTimeout(() => {
+             console.log("📣 Buka popup untuk:", key);
+             marker.openPopup();
+           }, 800);
+         } else {
+           console.warn("❌ Marker tidak ditemukan:", key);
+         }
+       },
+       markerRefs: markerRefs.current,
+     };
+
     }
 
     // ⛳ Tambahkan logika zoom out di sini
@@ -152,8 +167,11 @@ const MapWilayah: React.FC<MapWilayahProps> = ({ reports, mapRef }) => {
             key={markerKey}
             position={[v.lat, v.lng]}
             icon={getVillageIcon(v.imageUrl)}
-            ref={(ref) => {
-              if (ref) markerRefs.current[v.id] = ref;
+            ref={(marker) => {
+              if (marker) {
+                console.log("✅ Marker tersimpan:", markerKey);
+                markerRefs.current[markerKey] = marker;
+              }
             }}
           >
             <Popup>

@@ -43,34 +43,66 @@ export default function RegisterPage() {
     }
   };
 
+  const goToLogin = () => {
+    router.push("/login");
+  };
+
   return (
-    <form onSubmit={handleRegister} className="max-w-sm mx-auto mt-10">
-      <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
-
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full p-2 border rounded mb-3"
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password (min 6 karakter)"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full p-2 border rounded mb-3"
-        required
-      />
-      {error && <p className="text-red-500 mb-2">{error}</p>}
-
-      <button
-        type="submit"
-        className="bg-green-600 text-white px-4 py-2 rounded w-full hover:bg-green-700"
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <form
+        onSubmit={handleRegister}
+        className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8"
       >
-        Daftar
-      </button>
-    </form>
+        <div className="flex justify-center mb-4">
+          <img src="/images/logolangkat.png" alt="Logo" className="h-20 w-auto" />
+        </div>
+        <h2 className="text-3xl font-semibold text-center text-green-700-700 mb-6">
+          Daftar Akun
+        </h2>
+
+        <div className="mb-4">
+          <label className="block mb-1 text-sm text-gray-700">Email</label>
+          <input
+            type="email"
+            placeholder="Masukkan Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-1 text-sm text-gray-700">Password</label>
+          <input
+            type="password"
+            placeholder="Password (min 6 karakter)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+
+        {error && (
+          <p className="text-sm text-red-600 mb-4 text-center">{error}</p>
+        )}
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg transition duration-300"
+        >
+          Daftar
+        </button>
+
+        <button
+          type="button"
+          onClick={goToLogin}
+          className="mt-4 w-full border border-green-600 text-green-600 font-medium py-2 rounded-lg hover:bg-green-200 transition duration-300"
+        >
+          Sudah punya akun? Login
+        </button>
+      </form>
+    </div>
   );
 }
