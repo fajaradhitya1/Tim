@@ -24,7 +24,7 @@ export default function HomePage() {
       title: "Peta Wilayah",
       description:
         "Eksplorasi peta interaktif yang menampilkan desa, kelurahan, dan lokasi produk unggulan di Stabat.",
-      image: "/images/peta.jpg",
+      image: "/images/peta.png",
       link: "/peta",
     },
     {
@@ -190,7 +190,7 @@ export default function HomePage() {
           {cards.map((card, i) => (
             <div
               key={i}
-              className="bg-white text-black rounded-xl shadow-md hover:shadow-xl transition overflow-hidden flex flex-col"
+              className="bg-white text-black rounded-xl shadow-md hover:shadow-xl transition overflow-hidden flex flex-col "
             >
               <Image
                 src={card.image}

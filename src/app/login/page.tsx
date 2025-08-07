@@ -54,13 +54,15 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8"
       >
-        <div className="flex justify-center mb-4">
-          <img src="/images/logolangkat.png" alt="Logo" className="h-20 w-auto" />
+        <div className="flex justify-center mb-5">
+          <img
+            src="/images/langkat.png"
+            alt="Langkat Icon"
+            className="w-32 h-32 object-cover rounded-full"
+          />
         </div>
 
-        <h2 className="text-3xl font-semibold text-center text-blue-700 mb-6">
-          Login Akun
-        </h2>
+        
 
         <div className="mb-4">
           <label className="block mb-1 text-sm text-gray-700">

@@ -260,7 +260,7 @@ export default function DashboardPage() {
         <div className="col-md-8">
           <div className="px-2">
             <h2 className="fw-bold mb-3 text-success">
-              Sumber Daya Tidak Terpakai di Masyarakat
+              Sumber Daya Tidak Termanfaatkan di Masyarakat
             </h2>
 
             <ul className="list-group list-group-flush mb-3">

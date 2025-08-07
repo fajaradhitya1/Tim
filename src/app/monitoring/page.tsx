@@ -11,7 +11,7 @@ type KelurahanData = {
 
 type UserData = {
   nama: string;
-  telepon: string;
+  hp: string;
   alamat: string;
   kategori: string;
   keterangan: string;
@@ -26,6 +26,16 @@ export default function Monitoring() {
   const svgRef = useRef<SVGSVGElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const kotakRefs = useRef<(HTMLDivElement | null)[]>([]);
+   const [isDesktop, setIsDesktop] = useState(false);
+
+   useEffect(() => {
+     function handleResize() {
+       setIsDesktop(window.innerWidth >= 768); // breakpoint desktop
+     }
+     handleResize(); // cek awal
+     window.addEventListener("resize", handleResize);
+     return () => window.removeEventListener("resize", handleResize);
+   }, []);
 
   const kelurahanList = villageLocations.map((v) => v.name);
   const skipIndexes = [5, 6, 9, 10];
@@ -117,12 +127,12 @@ export default function Monitoring() {
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
-          gridTemplateRows: "repeat(4, 100px)",
-          gap: "20px",
+          gridTemplateRows: isDesktop ? "repeat(4, 140px)" : "repeat(4, 100px)", // lebih tinggi di desktop
+          gap: isDesktop ? "90px" : "20px", // jarak lebih besar di desktop
           justifyContent: "center",
           alignItems: "center",
           margin: "0 auto",
-          maxWidth: 600,
+          maxWidth: isDesktop ? 900 : 600,
         }}
         ref={gridRef}
       >
@@ -267,7 +277,7 @@ export default function Monitoring() {
                   {kategoriList.map((item, i) => (
                     <tr key={i}>
                       <td>{item.nama}</td>
-                      <td>{item.telepon}</td>
+                      <td>{item.hp}</td>
                       <td>{item.alamat}</td>
                       <td>{item.kategori}</td>
                       <td>{item.keterangan}</td>

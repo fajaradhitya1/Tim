@@ -67,14 +67,22 @@ export default function Navbar({
         )}
       >
         <div className="flex items-center justify-between p-4 border-b bg-white">
-          <span
-            className={clsx(
-              "text-blue-700 font-bold truncate",
-              collapsed ? "text-sm" : "text-lg"
+          <div className="flex flex-col">
+            <span
+              className={clsx(
+                "text-blue-700 font-bold truncate",
+                collapsed ? "text-sm" : "text-lg"
+              )}
+            >
+              {collapsed ? "Menu" : "Simasta"}
+            </span>
+            {!collapsed && (
+              <span className="text-[10px] text-gray-500 leading-tight mt-1">
+                Sistem Informasi Sumber Daya Manusia dan Masyarakat Kota Stabat
+                Berbasis Website
+              </span>
             )}
-          >
-            {collapsed ? "Menu" : "Desa Digital"}
-          </span>
+          </div>
 
           <button
             onClick={toggleSidebar}
@@ -155,9 +163,14 @@ export default function Navbar({
       {mobileOpen && (
         <div className="fixed top-0 left-0 h-screen w-full bg-white z-[10001] flex flex-col">
           <div className="flex items-center justify-between p-4 border-b">
-            <span className="text-lg font-bold text-blue-700">
-              Desa Digital
-            </span>
+            <div>
+              <span className="text-lg font-bold text-blue-700">Simasta</span>
+              <p className="text-xs text-gray-600 leading-tight">
+                Sistem Informasi Sumber Daya Manusia dan Masyarakat Kota Stabat
+                Berbasis Website
+              </p>
+            </div>
+
             <button
               onClick={toggleMobile}
               className="text-gray-500 hover:text-blue-600"

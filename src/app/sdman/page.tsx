@@ -114,7 +114,7 @@ export default function SmartCityPage() {
           timer: 2000,
           showConfirmButton: false,
         }).then(() => {
-          window.location.href = "/sdman";
+          window.location.href = "/";
         });
       } else {
         Swal.fire({
